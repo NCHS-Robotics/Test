@@ -40,6 +40,7 @@ void opcontrol() {
     while (true) {
         int power = master.get_analog(ANALOG_LEFT_Y);
         int turn = master.get_analog(ANALOG_RIGHT_X);
+        //voltages for motors   
         int left = power + turn;
         int right = power - turn;
 
