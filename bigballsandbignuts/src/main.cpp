@@ -5,6 +5,8 @@
 #define RIGHT_FRONT_WHEEL_PORT 4
 #define RIGHT_BACK_WHEEL_PORT 2
 #define INTAKE_MOTOR_PORT 5
+#define SHOOT_CLOSE_MOTOR_PORT 8
+#define SHOOT_FAR_MOTOR_PORT 10
 
 pros::Motor left_front_wheel(LEFT_FRONT_WHEEL_PORT, true); 
 pros::Motor left_back_wheel(LEFT_BACK_WHEEL_PORT, true);
@@ -13,10 +15,13 @@ pros::Motor right_back_wheel(RIGHT_BACK_WHEEL_PORT, true);
 
 pros::Motor intake_motor(INTAKE_MOTOR_PORT);
 
+pros::Motor shoot_close_motor(SHOOT_CLOSE_MOTOR_PORT);
+pros::Motor shoot_far_motor(SHOOT_FAR_MOTOR_PORT, true);
+
 pros::Controller master (pros::E_CONTROLLER_MASTER);
 
-
-void driveTask(void* param) {
+//drive task method
+void drive(void* param) {
     int dtY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int dtX = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
 
@@ -26,30 +31,15 @@ void driveTask(void* param) {
     right_front_wheel.move((dtX - dtY));
 }
 
-
+//intake task methods
 void intakeIn(void* param) {
-    /**
-        while (master.get_digital(DIGITAL_L1) == 1) {
-            intake_motor.move_velocity(200);
-        }
-        intake_motor.move_velocity(0);
-     **/ //doesn't stop
-
-    //intake_motor.move_velocity(200 * master.get_digital(DIGITAL_L1));
-    intake_motor.move_velocity(200 * (-1*(master.get_digital(DIGITAL_L2))));
+    int voltageAmount = -127 *(master.get_digital(DIGITAL_L1));
+    intake_motor.move(voltageAmount);
 }
 
 void intakeOut(void* param) {
-    /**
-     while (master.get_digital(DIGITAL_L2) == 1) {
-            intake_motor.move_velocity(-200);
-        }
-        intake_motor.move_velocity(0);
-    **/ //doesn't stop    
-
-    //intake_motor.move_velocity(-200 * master.get_digital(DIGITAL_L2));
-    //intake_motor.move_velocity(200 * (-1*(master.get_digital(DIGITAL_L2))));
-    intake_motor.move_velocity(200  * master.get_digital(DIGITAL_L2));
+    int voltageAmount = -127 * master.get_digital(DIGITAL_L2);
+    intake_motor.move(voltageAmount);
 }
 
 void intakeController(void* param) {
@@ -57,20 +47,45 @@ void intakeController(void* param) {
     intake_motor.move(y);
 }
 
-/**
-void intakeTask(void* param) {
-    while (master.get_digital(DIGITAL_L1) == 1) {
-            intake_motor.move_velocity(200);
-        }
-        intake_motor.move_velocity(0);
-    while (master.get_digital(DIGITAL_L2) == 1) {
-            intake_motor.move_velocity(-200);
-        }
-        intake_motor.move_velocity(0);    
-    //intake_motor.move_velocity(200 * master.get_digital(DIGITAL_L1));
-    //intake_motor.move_velocity(-200 * master.get_digital(DIGITAL_L2));
+//shoot motor task method
+void shoot(void* param) {
+    shoot_close_motor.move_velocity(200 * master.get_digital(DIGITAL_R2));
+    shoot_far_motor.move_velocity(200 * master.get_digital(DIGITAL_R2));
 }
-**/
+
+
+void intake(void* param) {
+    //bool runL1 = master.get_digital(DIGITAL_L1) == 1;
+    while (master.get_digital(DIGITAL_L1)) {
+            intake_motor.move(-127);
+            //pros::delay(1);
+            
+            /**
+            if (!runL1) {
+                intake_motor.move(0);
+                runL1 = false;
+            }
+            */
+        }
+    pros::delay(1);
+    intake_motor.move(0);
+
+    //bool runL2 = master.get_digital(DIGITAL_L2) == 1;
+    while (master.get_digital(DIGITAL_L2)) {
+            intake_motor.move(127);
+            //pros::delay(1);
+            
+            /**
+            if (!runL2) {
+                intake_motor.move(0);
+                runL2 = false;
+            }
+            */
+        } 
+    pros::delay(1);   
+    intake_motor.move(0);
+}
+
 /**
 void leftBackDrive(void* param) {
     int dtY = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -127,17 +142,19 @@ void opcontrol() {
         intake_motor.move_velocity(0);  
         **/
           
-        pros::Task drive(driveTask);
+        pros::Task driveTask(drive);
 
-        //pros::Task intake(intakeTask);
-        //pros::Task intakeI(intakeIn);
-        //pros::Task intakeO(intakeOut);
-        pros::Task intakeC(intakeController);
+        pros::Task intakeTask(intake);
+        //pros::Task intakeInTask(intakeIn);
+        //pros::Task intakeOutTask(intakeOut);
+        //pros::Task intakeControllerTask(intakeController);
 
         //pros::Task leftBDrive(leftBackDrive);
         //pros::Task leftFDrive(leftFrontDrive);
         //pros::Task rightBDrive(rightBackDrive);
         //pros::Task rightFDrive(rightFrontDrive);
+
+        pros::Task shootTask(shoot);
 
         pros::delay(2);
     }
