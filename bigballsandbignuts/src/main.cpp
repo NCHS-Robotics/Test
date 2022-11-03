@@ -14,6 +14,7 @@ pros::Motor right_front_wheel(RIGHT_FRONT_WHEEL_PORT, true);
 pros::Motor right_back_wheel(RIGHT_BACK_WHEEL_PORT, true);
 
 pros::Motor intake_motor(INTAKE_MOTOR_PORT);
+pros::Motor intake_motor_reverse(1, true);
 
 pros::Motor shoot_close_motor(SHOOT_CLOSE_MOTOR_PORT);
 pros::Motor shoot_far_motor(SHOOT_FAR_MOTOR_PORT, true);
@@ -33,13 +34,21 @@ void drive(void* param) {
 
 //intake task methods
 void intakeIn(void* param) {
+
+    intake_motor_reverse.move(master.get_digital(DIGITAL_L1) * 127);
+    /**
     int voltageAmount = -127 *(master.get_digital(DIGITAL_L1));
     intake_motor.move(voltageAmount);
+    */
 }
 
 void intakeOut(void* param) {
+    intake_motor.move(master.get_digital(DIGITAL_L2) * 127);
+
+    /**
     int voltageAmount = -127 * master.get_digital(DIGITAL_L2);
     intake_motor.move(voltageAmount);
+    */
 }
 
 void intakeController(void* param) {
@@ -55,17 +64,56 @@ void shoot(void* param) {
 
 
 void intake(void* param) {
+
+//    intake_motor.move(master.get_digital(DIGITAL_L1) * 127);
+  //  intake_motor.move(master.get_digital(DIGITAL_L2) * -127);
+
+
+//working code
+if (master.get_digital(DIGITAL_L1) == 1) {
+    intake_motor.move(127 * master.get_digital(DIGITAL_L1));
+}
+if (master.get_digital(DIGITAL_L2) == 1) {
+    intake_motor.move(-127 * master.get_digital(DIGITAL_L2));
+}
+if (master.get_digital(DIGITAL_R1) == 1) {
+    intake_motor.move(0);
+}
+
+
+/**
+//does not work, only goes and stops in one direction
+if (master.get_digital(DIGITAL_L1) == 1) {
+    intake_motor.move(127 * master.get_digital(DIGITAL_L1));
+}
+
+if (master.get_digital(DIGITAL_L1) == 0) {
+        intake_motor.move(0);
+    }
+if (master.get_digital(DIGITAL_L2) == 1) {
+    intake_motor.move(-127 * master.get_digital(DIGITAL_L2));
+}
+
+if (master.get_digital(DIGITAL_L2) == 0) {
+        intake_motor.move(0);
+    }
+    */
+
+
+
+
+    /**
     //bool runL1 = master.get_digital(DIGITAL_L1) == 1;
     while (master.get_digital(DIGITAL_L1)) {
             intake_motor.move(-127);
-            //pros::delay(1);
+            pros::delay(1);
             
             /**
             if (!runL1) {
                 intake_motor.move(0);
                 runL1 = false;
             }
-            */
+            
         }
     pros::delay(1);
     intake_motor.move(0);
@@ -73,17 +121,18 @@ void intake(void* param) {
     //bool runL2 = master.get_digital(DIGITAL_L2) == 1;
     while (master.get_digital(DIGITAL_L2)) {
             intake_motor.move(127);
-            //pros::delay(1);
+            pros::delay(1);
             
             /**
             if (!runL2) {
                 intake_motor.move(0);
                 runL2 = false;
             }
-            */
+            
         } 
     pros::delay(1);   
     intake_motor.move(0);
+    */
 }
 
 /**
