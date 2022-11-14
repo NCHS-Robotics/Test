@@ -1,3 +1,43 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LFdrive              motor         3               
+// LBdrive              motor         1               
+// RFdrive              motor         4               
+// RBdrive              motor         2               
+// IntakeMotor          motor         5               
+// ShootClose           motor         8               
+// ShootFar             motor         10              
+// Controller1          controller                    
+// Inertial             inertial      11              
+// Endgame              motor         19              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LFdrive              motor         3               
+// LBdrive              motor         1               
+// RFdrive              motor         4               
+// RBdrive              motor         2               
+// IntakeMotor          motor         5               
+// ShootClose           motor         8               
+// ShootFar             motor         10              
+// Controller1          controller                    
+// Inertial             inertial      11              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LFdrive              motor         3               
+// LBdrive              motor         1               
+// RFdrive              motor         4               
+// RBdrive              motor         2               
+// IntakeMotor          motor         5               
+// ShootClose           motor         8               
+// ShootFar             motor         10              
+// Controller1          controller                    
+// Inertial             inertial      11              
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -213,10 +253,10 @@ void usercontrol(void) {
     //double suckVal = Controller1.ButtonL1.pressing();
     //double suckVolts = suckVal * 0.12;
     
-    if (Controller1.ButtonL1.pressing()){
+    if (Controller1.ButtonL2.pressing()){
       IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
     }
-    else if (Controller1.ButtonL2.pressing()){
+    else if (Controller1.ButtonL1.pressing()){
       IntakeMotor.spin(forward, -12.0 , voltageUnits::volt);
     }
     else{
@@ -244,17 +284,17 @@ void usercontrol(void) {
     //Suck.spin(forward, suckVolts , voltageUnits::volt);
     //Suck.spin(reverse, suckVolts , voltageUnits::volt);
 
-    /*
-    if (Controller1.ButtonX.pressing()) {
-      Endgame.spin(reverse, 12.0, voltageUnits::volt);
-    }
-    else if(Controller1.ButtonB.pressing()) {
+    
+    if (Controller1.ButtonUp.pressing()){ 
       Endgame.spin(forward, 12.0, voltageUnits::volt);
+    }
+    else if(Controller1.ButtonDown.pressing()) {
+      Endgame.spin(reverse, 12.0, voltageUnits::volt);
     }
     else{
       Endgame.stop(brakeType::hold);
     }
-    */
+    
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

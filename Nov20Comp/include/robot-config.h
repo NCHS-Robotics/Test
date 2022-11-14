@@ -12,6 +12,7 @@ extern motor ShootClose;
 extern motor ShootFar;
 extern controller Controller1;
 extern inertial Inertial;
+extern motor Endgame;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

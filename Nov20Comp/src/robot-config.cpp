@@ -14,9 +14,10 @@ motor RFdrive = motor(PORT4, ratio6_1, true);
 motor RBdrive = motor(PORT2, ratio6_1, true);
 motor IntakeMotor = motor(PORT5, ratio36_1, false);
 motor ShootClose = motor(PORT8, ratio18_1, false);
-motor ShootFar = motor(PORT10, ratio18_1, true);
+motor ShootFar = motor(PORT10, ratio18_1, false);
 controller Controller1 = controller(primary);
 inertial Inertial = inertial(PORT11);
+motor Endgame = motor(PORT19, ratio18_1, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
