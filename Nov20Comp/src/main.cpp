@@ -24,19 +24,7 @@
 // ShootFar             motor         10              
 // Controller1          controller                    
 // Inertial             inertial      11              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LFdrive              motor         3               
-// LBdrive              motor         1               
-// RFdrive              motor         4               
-// RBdrive              motor         2               
-// IntakeMotor          motor         5               
-// ShootClose           motor         8               
-// ShootFar             motor         10              
-// Controller1          controller                    
-// Inertial             inertial      11              
+// Endgame              motor         19              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -46,20 +34,6 @@
 /*    Description:  Competition Template                                      */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LFdrive              motor         3               
-// LBdrive              motor         1               
-// RFdrive              motor         4               
-// RBdrive              motor         2               
-// IntakeMotor          motor         5               
-// ShootClose           motor         8               
-// ShootFar             motor         10              
-// Controller1          controller                    
-// Inertial             inertial      11              
-// ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
 #include <cmath>
@@ -123,18 +97,8 @@ void setMotorPercentage(int percentage) {
   ShootFar.setVelocity(percentage, percent);
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
-
-void autonomous(void) {
-  //primeFirst3(360);
+void alingTest() {
+    //primeFirst3(360);
   //RBdrive.spinFor(forward, 360, degrees);
   //RBdrive.spin(forward, 12, volt); //vex::voltageUnits 
 
@@ -181,29 +145,41 @@ void autonomous(void) {
 
   }
   */
+}
+
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              Autonomous Task                              */
+/*                                                                           */
+/*  This task is used to control your robot during the autonomous phase of   */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
+
+void autonomous(void) {
 
   setMotorPercentage(50);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 
-
-  primeFirst3(-360);
+  primeFirst3(-330);
   RBdrive.spinFor(reverse, 330, deg);
 
-  IntakeMotor.spin(reverse);
+  IntakeMotor.spin(forward);
   wait(1, sec);
   IntakeMotor.stop(brakeType::brake);
 
   primeFirst3(360);
   RBdrive.spinFor(forward, 360, deg);
 
-  LFdrive.startRotateFor(forward, 700, degrees);
-  LBdrive.startRotateFor(forward, 700, degrees);
-  RFdrive.startRotateFor(reverse, 700, degrees);  
-  RBdrive.spinFor(reverse, 700, degrees);
-
-  primeFirst3(1600);
-  RBdrive.spinFor(forward, 1600, degrees);
+  LFdrive.startRotateFor(reverse, 750, degrees);
+  LBdrive.startRotateFor(reverse, 750, degrees);
+  RFdrive.startRotateFor(forward, 750, degrees);  
+  RBdrive.spinFor(forward, 750, degrees);
+  
+  primeFirst3(1700);
+  RBdrive.spinFor(forward, 1700, degrees);
 
   ShootClose.spin(forward);
   ShootFar.spin(forward);
@@ -236,7 +212,6 @@ void usercontrol(void) {
     Brain.Screen.printAt(1,40,"RPM:%f",ShootClose.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,80,"RPM:%f",ShootFar.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,120,"RPM:%f",IntakeMotor.velocity(vex::velocityUnits::rpm));
-
     Brain.Screen.render();
     
     double turnVal = Controller1.Axis4.position(percent);
@@ -273,14 +248,33 @@ void usercontrol(void) {
     Controller1.ButtonR1.pressed(Shoot);
     Controller1.ButtonR2.pressed(Nothing);
     */
+
     if (Controller1.ButtonR1.pressing()){
       ShootClose.spin(forward, 12.0 , voltageUnits::volt);
-      ShootFar.spin(reverse, 12.0, voltageUnits::volt);
+      ShootFar.spin(forward, 12.0, voltageUnits::volt);
     }
     else{
       ShootClose.stop();
       ShootFar.stop();
     }
+
+    //coast at max speed when holding shoot button
+
+    /*
+    while (Controller1.ButtonR1.pressing()) {
+      double velo = ShootClose.velocity(rpm);
+      if (velo >= 600) {
+        ShootClose.stop(brakeType::coast);
+        ShootFar.stop(brakeType::coast);
+      } else {
+        ShootClose.spin(forward, 12.0, volt);
+        ShootFar.spin(reverse, 12.0, volt);
+      }
+    } 
+    //stop motors (if needed)
+    */
+    
+
     //Suck.spin(forward, suckVolts , voltageUnits::volt);
     //Suck.spin(reverse, suckVolts , voltageUnits::volt);
 

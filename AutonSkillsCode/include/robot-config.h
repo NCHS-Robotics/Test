@@ -10,7 +10,6 @@ extern motor RBdrive;
 extern motor IntakeMotor;
 extern motor ShootClose;
 extern motor ShootFar;
-extern controller Controller1;
 extern inertial Inertial;
 extern motor Endgame;
 
