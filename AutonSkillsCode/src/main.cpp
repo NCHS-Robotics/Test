@@ -79,66 +79,129 @@ void setMotorPercentage(int percentage) {
   ShootFar.setVelocity(percentage, percent);
 }
 
+//shoot discs out of robot
+//@param intakeDeg = degrees to spin intake
+void shootDiscs(int intakeDeg) {
+  ShootClose.spin(forward);
+  ShootFar.spin(forward);
+  wait (1, sec);
+  IntakeMotor.spinFor(reverse, intakeDeg, deg);
+  ShootClose.stop(brakeType::brake);
+  ShootFar.stop(brakeType::brake);
+  IntakeMotor.stop(brakeType::brake);
+}
+
 void auton() {
+  //front: brain
+  //back: intake
+  //clockwise: negative
+  //counter-clockwise: positive
+
   setMotorPercentage(50);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 
   //shoot two preloads in blue hoop
-  ShootClose.spin(forward);
-  ShootFar.spin(forward);
-  wait (1, sec);
-  IntakeMotor.spinFor(reverse, 720, deg);
-  ShootClose.stop(brakeType::brake);
-  ShootFar.stop(brakeType::brake);
-  IntakeMotor.stop(brakeType::brake);
-
-  wait(0.2, sec);
+  shootDiscs(720);
   
-  //go to top left blue side roller and roll it 
-  primeFirst3(-3750);
-  RBdrive.spinFor(forward, -3750, degrees);
-
-  LFdrive.startRotateFor(forward, 750, degrees);
-  LBdrive.startRotateFor(forward, 750, degrees);
-  RFdrive.startRotateFor(reverse, 750, degrees);
-  RBdrive.spinFor(reverse, 750, degrees);
-
-  primeFirst3(-230);
-  RBdrive.spinFor(forward, -230, degrees);
-  
-  //roll top left red side roller
-  primeFirst3(720);
+  //roll top rollers
+  driveLateral(-3750);
+  turnRobot(750);
+  driveLateral(-230);
   IntakeMotor.spinFor(forward, 720, degrees);
 
-  LFdrive.startRotateFor(forward, -750, degrees);
-  LBdrive.startRotateFor(forward, -750, degrees);
-  RFdrive.startRotateFor(reverse, -750, degrees);
-  RBdrive.spinFor(reverse, -750, degrees);
+  driveLateral(720);
+  turnRobot(-750);
+  driveLateral(-720);
+  IntakeMotor.spinFor(forward, 720, degrees);
 
-  primeFirst3(720);
-  RBdrive.spinFor(forward, 720, degrees);
+  //align with wall, pick to middle blue discs and shoot them
+  driveLateral(360);
+  turnRobot(750);
+  driveLateral(720);
+  turnRobot(750);
+  driveLateral(1200);
 
-  primeFirst3(-230);
-  RBdrive.spinFor(forward, -230, degrees);
+  setDrivePercentage(25);
+  IntakeMotor.setVelocity(100, percent);
 
-  primeFirst3(-720);
-  RBdrive.spinFor(forward, -720, degrees);
+  driveLateral(-720);
+  turnRobot(1125);
+  IntakeMotor.spin(reverse);
+  driveLateral(-2000);
+  IntakeMotor.stop(brakeType::brake);
+  turnRobot(-750);
+  driveLateral(500);
 
-  //pick to top 2 middle blue discs 
-  //shoot all 3 discs into red hoop
-  //pick up bottom two middle red discs
-  //shoot into red hoop
-  //roll bottom right red side roller
+  shootDiscs(1000);
+
+  turnRobot(750);
+  IntakeMotor.spin(reverse);
+  driveLateral(-2000);
+  IntakeMotor.stop(brakeType::brake);
+  turnRobot(-1125);
+  driveLateral(720);
+
+  shootDiscs(1000);
+
+  //roll bottom rollers
+  setDrivePercentage(50);
+  IntakeMotor.setVelocity(50, percent);
+
+  driveLateral(-720);
+  turnRobot(1125);
+  driveLateral(720);
+  turnRobot(750);
+  driveLateral(-360);
+  IntakeMotor.spinFor(forward, 720, degrees);
+
+  driveLateral(720);
+  turnRobot(750);
+  driveLateral(-720);
+  IntakeMotor.spinFor(forward, 720, degrees);
+
+  //align with wall, pick up red middle discs and shoot them
+  driveLateral(360);
+  turnRobot(750);
+  driveLateral(720);
+  turnRobot(750);
+  driveLateral(1200);
+
+  setDrivePercentage(25);
+  IntakeMotor.setVelocity(100, percent);
+
+  driveLateral(-720);
+  turnRobot(1125);
+  IntakeMotor.spin(reverse);
+  driveLateral(-2000);
+  IntakeMotor.stop(brakeType::brake);
+  turnRobot(-750);
+  driveLateral(500);
+
+  shootDiscs(1000);
+
+  turnRobot(750);
+  IntakeMotor.spin(reverse);
+  driveLateral(-2000);
+  IntakeMotor.stop(brakeType::brake);
+  turnRobot(-1125);
+  driveLateral(720);
+
+  shootDiscs(1000);
+
+  //endgame
+  Endgame.spin(forward);
 }
 
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+
   /*
   ControllerScreen.clearScreen();
   ControllerScreen.print("Autonomous Started");
   */
+  
   auton();
 
 }
