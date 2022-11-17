@@ -34,16 +34,30 @@ void primeFirst3(int deg) {
   RFdrive.startRotateFor(forward, deg, degrees);
 }
 
-//spin all motors
-void spinAll() {
-  LFdrive.spin(forward, 5, volt);
-  LBdrive.spin(forward, 5, volt);
-  RFdrive.spin(forward, 5, volt);
-  RBdrive.spin(forward, 5, volt);
+//drive laterally
+void driveLateral(int deg) {
+  primeFirst3(deg);
+  RBdrive.spinFor(forward, deg, degrees);
 }
 
-//stop all motors
-void stopAll() {
+//turn the robot
+void turnRobot(int deg) {
+  LFdrive.startRotateFor(forward, deg, degrees);
+  LBdrive.startRotateFor(forward, deg, degrees);
+  RFdrive.startRotateFor(reverse, deg, degrees);
+  RBdrive.spinFor(reverse, deg, degrees);
+}
+
+//spin all drive motors
+void spinAllDrive(int volts) {
+  LFdrive.spin(forward, volts, volt);
+  LBdrive.spin(forward, volts, volt);
+  RFdrive.spin(forward, volts, volt);
+  RBdrive.spin(forward, volts, volt);
+}
+
+//stop all drive motors
+void stopAllDrive() {
   LFdrive.stop(brakeType::brake);
   LBdrive.stop(brakeType::brake);
   RFdrive.stop(brakeType::brake);
@@ -51,17 +65,19 @@ void stopAll() {
 }
 
 //set motor velocity percentage
-void setMotorPercentage(int percentage) {
+void setDrivePercentage(int percentage) {
   LFdrive.setVelocity(percentage, percent);
   LBdrive.setVelocity(percentage, percent);
   RFdrive.setVelocity(percentage, percent);
   RBdrive.setVelocity(percentage, percent);
+}
+
+void setMotorPercentage(int percentage) {
+  setDrivePercentage(percentage);
   IntakeMotor.setVelocity(percentage, percent);
   ShootClose.setVelocity(percentage, percent);
   ShootFar.setVelocity(percentage, percent);
 }
-
-//print onto controller screen in top left
 
 void auton() {
   setMotorPercentage(50);
