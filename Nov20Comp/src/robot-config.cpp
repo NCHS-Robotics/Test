@@ -18,6 +18,7 @@ motor ShootFar = motor(PORT10, ratio18_1, true);
 controller Controller1 = controller(primary);
 inertial Inertial = inertial(PORT11);
 motor Endgame = motor(PORT19, ratio18_1, false);
+gyro Gyro = gyro(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

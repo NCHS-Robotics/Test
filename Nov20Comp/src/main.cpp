@@ -11,20 +11,7 @@
 // Controller1          controller                    
 // Inertial             inertial      11              
 // Endgame              motor         19              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LFdrive              motor         3               
-// LBdrive              motor         1               
-// RFdrive              motor         4               
-// RBdrive              motor         2               
-// IntakeMotor          motor         5               
-// ShootClose           motor         8               
-// ShootFar             motor         10              
-// Controller1          controller                    
-// Inertial             inertial      11              
-// Endgame              motor         19              
+// Gyro                 gyro          A               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -97,71 +84,19 @@ void setMotorPercentage(int percentage) {
   ShootFar.setVelocity(percentage, percent);
 }
 
-void alingTest() {
-    //primeFirst3(360);
-  //RBdrive.spinFor(forward, 360, degrees);
-  //RBdrive.spin(forward, 12, volt); //vex::voltageUnits 
-
-  /*
-  while(true) {
-    double headingChange = Inertial.heading(degrees) - heading; 
-
-    ControllerScreen.print(headingChange);
-
-    if (headingChange > 5 || headingChange < -5) { 
-      ControllerScreen.print(headingChange);
-      stopAll();
-    }
-
-    ControllerScreen.clearScreen();
-  }
-  */
-    /*
-    if (headingChange > 5) {
-      bool change = false;
-      while (!change) {
-        RFdrive.spin(forward, 6, volt);
-        RBdrive.spin(forward, 6, volt);
-        if (headingChange == 0) {
-          RFdrive.spin(forward, 5, volt);
-          RBdrive.spin(forward, 5, volt);
-          change = true;
-        }
-      }
-    }
-
-    if (headingChange < -5) {
-      bool change = false;
-      while (!change) {
-        LFdrive.spin(forward, 6, volt);
-        LBdrive.spin(forward, 6, volt);
-        if (headingChange == 0) {
-          LFdrive.spin(forward, 5, volt);
-          LBdrive.spin(forward, 5, volt);
-          change = true;
-        }
-      }
-    }
-
-  }
-  */
+//calibrate gyro
+void resetGyro() {
+  Gyro.resetAngle();
+  Gyro.resetHeading();
+  Gyro.resetRotation();
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
-
 void autonomous(void) {
 
   setMotorPercentage(50);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
+  //resetGyro();
+  //wait(1, sec);
 
   primeFirst3(-330);
   RBdrive.spinFor(reverse, 330, deg);
@@ -173,11 +108,28 @@ void autonomous(void) {
   primeFirst3(360);
   RBdrive.spinFor(forward, 360, deg);
 
+  /*
+  double heading = Gyro.heading();
+
+  while (Gyro.heading() <= (heading + 270)) {
+    LFdrive.spin(forward);
+    LBdrive.spin(forward);
+    RFdrive.spin(reverse);
+    RBdrive.spin(reverse);
+  }
+  LFdrive.stop(brakeType::brake);
+  LBdrive.stop(brakeType::brake);
+  RFdrive.stop(brakeType::brake);
+  RBdrive.stop(brakeType::brake);
+  */
+
+  
   LFdrive.startRotateFor(reverse, 750, degrees);
   LBdrive.startRotateFor(reverse, 750, degrees);
   RFdrive.startRotateFor(forward, 750, degrees);  
   RBdrive.spinFor(forward, 750, degrees);
   
+
   primeFirst3(1700);
   RBdrive.spinFor(forward, 1700, degrees);
 
@@ -211,7 +163,8 @@ void usercontrol(void) {
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(1,40,"RPM:%f",ShootClose.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,80,"RPM:%f",ShootFar.velocity(vex::velocityUnits::rpm));
-    Brain.Screen.printAt(1,120,"RPM:%f",IntakeMotor.velocity(vex::velocityUnits::rpm));
+    Brain.Screen.printAt(1,120,"RPM:%f",IntakeMotor.velocity(vex::velocityUnits::rpm));\
+    Brain.Screen.printAt(1,160, "Heading Angle:%f",Gyro.value(deg));
     Brain.Screen.render();
     
     double turnVal = Controller1.Axis4.position(percent);
@@ -238,6 +191,7 @@ void usercontrol(void) {
       IntakeMotor.stop();
     }
     
+    
     /*void Shoot() {
       Shootabig.spin(reverse, 12.0 , voltageUnits::volt);
     }
@@ -249,6 +203,8 @@ void usercontrol(void) {
     Controller1.ButtonR2.pressed(Nothing);
     */
 
+    //regular shoot
+    
     if (Controller1.ButtonR1.pressing()){
       ShootClose.spin(forward, 12.0 , voltageUnits::volt);
       ShootFar.spin(forward, 12.0, voltageUnits::volt);
@@ -257,13 +213,16 @@ void usercontrol(void) {
       ShootClose.stop();
       ShootFar.stop();
     }
+    
+    
 
-    //coast at max speed when holding shoot button
-
+    //coast at 210 rpm when holding shoot button
     /*
-    while (Controller1.ButtonR1.pressing()) {
+    if (Controller1.ButtonR1.pressing()) {
+      ShootClose.spin(forward, 12.0, volt);
+      ShootFar.spin(forward, 12.0, volt);
       double velo = ShootClose.velocity(rpm);
-      if (velo >= 600) {
+      if (velo >= 210) {
         ShootClose.stop(brakeType::coast);
         ShootFar.stop(brakeType::coast);
       } else {
@@ -271,7 +230,10 @@ void usercontrol(void) {
         ShootFar.spin(reverse, 12.0, volt);
       }
     } 
-    //stop motors (if needed)
+    else {
+      ShootClose.stop();
+      ShootFar.stop();
+    }
     */
     
 
