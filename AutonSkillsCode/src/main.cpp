@@ -98,6 +98,7 @@ void auton() {
   //counter-clockwise: positive
 
   setMotorPercentage(50);
+  setDrivePercentage(35);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 
@@ -105,28 +106,27 @@ void auton() {
   shootDiscs(720);
   
   //roll top rollers
-  driveLateral(-3750);
-  turnRobot(750);
-  driveLateral(-230);
-  IntakeMotor.spinFor(forward, 720, degrees);
+  driveLateral(-3600);
+  turnRobot(670);
+  driveLateral(-380);
+  IntakeMotor.spinFor(forward, -720, degrees);
 
-  driveLateral(720);
-  turnRobot(-750);
-  driveLateral(-720);
-  IntakeMotor.spinFor(forward, 720, degrees);
+  driveLateral(1200);
+  turnRobot(-690);
+  driveLateral(-1000);
+  IntakeMotor.spinFor(forward, -720, degrees);
 
   //align with wall, pick to middle blue discs and shoot them
-  driveLateral(360);
-  turnRobot(750);
   driveLateral(720);
   turnRobot(750);
-  driveLateral(1200);
+  driveLateral(1500);
+  turnRobot(750);
+  driveLateral(3000);
 
-  setDrivePercentage(25);
   IntakeMotor.setVelocity(100, percent);
 
   driveLateral(-720);
-  turnRobot(1125);
+  turnRobot(200);
   IntakeMotor.spin(reverse);
   driveLateral(-2000);
   IntakeMotor.stop(brakeType::brake);

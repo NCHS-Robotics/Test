@@ -1,7 +1,7 @@
 #include "main.h"
 
 #define LEFT_FRONT_WHEEL_PORT 3
-#define LEFT_BACK_WHEEL_PORT 11
+#define LEFT_BACK_WHEEL_PORT 1
 #define RIGHT_FRONT_WHEEL_PORT 4
 #define RIGHT_BACK_WHEEL_PORT 2
 #define INTAKE_MOTOR_PORT 5
