@@ -106,14 +106,14 @@ void auton() {
   shootDiscs(720);
   
   //roll top rollers
-  driveLateral(-3600);
-  turnRobot(670);
-  driveLateral(-380);
-  IntakeMotor.spinFor(forward, -720, degrees);
+  driveLateral(-3650);
+  turnRobot(650);
+  driveLateral(-400);
+  IntakeMotor.spinFor(forward, -725, degrees);
 
   driveLateral(1200);
-  turnRobot(-690);
-  driveLateral(-1000);
+  turnRobot(-695);
+  driveLateral(-1075);
   IntakeMotor.spinFor(forward, -720, degrees);
 
   //align with wall, pick to middle blue discs and shoot them
