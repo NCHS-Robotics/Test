@@ -49,11 +49,18 @@ void turnRobot(int deg) {
 }
 
 //spin all drive motors
-void spinAllDrive(int volts) {
-  LFdrive.spin(forward, volts, volt);
-  LBdrive.spin(forward, volts, volt);
-  RFdrive.spin(forward, volts, volt);
-  RBdrive.spin(forward, volts, volt);
+void spinAllDriveForward() {
+  LFdrive.spin(forward);
+  LBdrive.spin(forward);
+  RFdrive.spin(forward);
+  RBdrive.spin(forward);
+}
+
+void spinAllDriveReverse() {
+  LFdrive.spin(reverse);
+  LBdrive.spin(reverse);
+  RFdrive.spin(reverse);
+  RBdrive.spin(reverse);
 }
 
 //stop all drive motors
@@ -84,7 +91,7 @@ void setMotorPercentage(int percentage) {
 void shootDiscs(int intakeDeg) {
   ShootClose.spin(forward);
   ShootFar.spin(forward);
-  wait (1, sec);
+  wait (2, sec);
   IntakeMotor.spinFor(reverse, intakeDeg, deg);
   ShootClose.stop(brakeType::brake);
   ShootFar.stop(brakeType::brake);
@@ -97,56 +104,76 @@ void auton() {
   //clockwise: negative
   //counter-clockwise: positive
 
-  setMotorPercentage(50);
+  setMotorPercentage(100);
   setDrivePercentage(35);
-  ShootClose.setVelocity(100, percent);
-  ShootFar.setVelocity(100, percent);
 
   //shoot two preloads in blue hoop
   shootDiscs(720);
   
   //roll top rollers
+  //top blue
   driveLateral(-3650);
   turnRobot(650);
-  driveLateral(-400);
-  IntakeMotor.spinFor(forward, -725, degrees);
+  setDrivePercentage(15);
+  spinAllDriveReverse();
+  wait(2, sec);
+  IntakeMotor.spinFor(forward, -700, degrees);
+  stopAllDrive();
 
-  driveLateral(1200);
+  //top red
+  driveLateral(1350);
   turnRobot(-695);
-  driveLateral(-1075);
-  IntakeMotor.spinFor(forward, -720, degrees);
+  spinAllDriveReverse();
+  IntakeMotor.spin(reverse);
+  wait(3, sec);
+  stopAllDrive();
+  IntakeMotor.stop(brakeType::brake);
+  driveLateral(720);
+  IntakeMotor.spinFor(forward, 450, degrees);
+
+  setDrivePercentage(35);
 
   //align with wall, pick to middle blue discs and shoot them
-  driveLateral(720);
-  turnRobot(750);
+  //align
+  turnRobot(695);
   driveLateral(1500);
-  turnRobot(750);
+  turnRobot(695);
   driveLateral(3000);
 
-  IntakeMotor.setVelocity(100, percent);
-
+  //shoot picked up disc
   driveLateral(-720);
-  turnRobot(200);
-  IntakeMotor.spin(reverse);
-  driveLateral(-2000);
-  IntakeMotor.stop(brakeType::brake);
-  turnRobot(-750);
-  driveLateral(500);
-
+  turnRobot(-695);
+  driveLateral(2000);
   shootDiscs(1000);
 
-  turnRobot(750);
+  driveLateral(-1800);
+  turnRobot(695);
+  driveLateral(3000);
+
+  //mid red discs
+  driveLateral(-1450);
+  turnRobot(375);
   IntakeMotor.spin(reverse);
-  driveLateral(-2000);
+  driveLateral(-1350);
   IntakeMotor.stop(brakeType::brake);
-  turnRobot(-1125);
+  turnRobot(-900);
+  driveLateral(750);
+
+  shootDiscs(1200);
+
+  turnRobot(-850);
+  IntakeMotor.spin(reverse);
+  driveLateral(-1500);
+  IntakeMotor.stop(brakeType::brake);
+  turnRobot(-1000);
   driveLateral(720);
 
   shootDiscs(1000);
+
+  /**
 
   //roll bottom rollers
   setDrivePercentage(50);
-  IntakeMotor.setVelocity(50, percent);
 
   driveLateral(-720);
   turnRobot(1125);
@@ -168,7 +195,6 @@ void auton() {
   driveLateral(1200);
 
   setDrivePercentage(25);
-  IntakeMotor.setVelocity(100, percent);
 
   driveLateral(-720);
   turnRobot(1125);
@@ -191,6 +217,7 @@ void auton() {
 
   //endgame
   Endgame.spin(forward);
+  **/
 }
 
 int main() {
