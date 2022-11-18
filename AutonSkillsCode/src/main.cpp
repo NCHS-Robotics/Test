@@ -104,6 +104,7 @@ void auton() {
   //clockwise: negative
   //counter-clockwise: positive
 
+  //set motor speeds
   setMotorPercentage(100);
   setDrivePercentage(35);
 
@@ -114,9 +115,11 @@ void auton() {
   //top blue
   driveLateral(-3650);
   turnRobot(650);
+
   setDrivePercentage(15);
   spinAllDriveReverse();
-  wait(2, sec);
+
+  wait(1.5, sec);
   IntakeMotor.spinFor(forward, -700, degrees);
   stopAllDrive();
 
@@ -125,7 +128,7 @@ void auton() {
   turnRobot(-695);
   spinAllDriveReverse();
   IntakeMotor.spin(reverse);
-  wait(3, sec);
+  wait(2.75, sec);
   stopAllDrive();
   IntakeMotor.stop(brakeType::brake);
   driveLateral(720);
@@ -146,7 +149,8 @@ void auton() {
   driveLateral(2000);
   shootDiscs(1000);
 
-  driveLateral(-1800);
+  //go back to align w/ wall
+  driveLateral(-2000);
   turnRobot(695);
   driveLateral(3000);
 
@@ -161,17 +165,21 @@ void auton() {
 
   shootDiscs(1200);
 
-  turnRobot(-850);
+  driveLateral(-750);
+  turnRobot(900);
   IntakeMotor.spin(reverse);
   driveLateral(-1500);
   IntakeMotor.stop(brakeType::brake);
   turnRobot(-1000);
-  driveLateral(720);
+  driveLateral(850);
 
   shootDiscs(1000);
+  
+  //turn robot around and endgame
+  turnRobot(-1500);
+  Endgame.spinFor(forward, 360, degrees);
 
-  /**
-
+  /** continute auton after batavia
   //roll bottom rollers
   setDrivePercentage(50);
 
