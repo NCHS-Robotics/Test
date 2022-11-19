@@ -60,28 +60,68 @@ void primeFirst3(int deg) {
   RFdrive.startRotateFor(forward, deg, degrees);
 }
 
-void spinAll() {
-  LFdrive.spin(forward, 5, volt);
-  LBdrive.spin(forward, 5, volt);
-  RFdrive.spin(forward, 5, volt);
-  RBdrive.spin(forward, 5, volt);
+//drive laterally
+void driveLateral(int deg) {
+  primeFirst3(deg);
+  RBdrive.spinFor(forward, deg, degrees);
 }
 
-void stopAll() {
+//turn the robot
+void turnRobot(int deg) {
+  LFdrive.startRotateFor(forward, deg, degrees);
+  LBdrive.startRotateFor(forward, deg, degrees);
+  RFdrive.startRotateFor(reverse, deg, degrees);
+  RBdrive.spinFor(reverse, deg, degrees);
+}
+
+//spin all drive motors
+void spinAllDriveForward() {
+  LFdrive.spin(forward);
+  LBdrive.spin(forward);
+  RFdrive.spin(forward);
+  RBdrive.spin(forward);
+}
+
+void spinAllDriveReverse() {
+  LFdrive.spin(reverse);
+  LBdrive.spin(reverse);
+  RFdrive.spin(reverse);
+  RBdrive.spin(reverse);
+}
+
+//stop all drive motors
+void stopAllDrive() {
   LFdrive.stop(brakeType::brake);
   LBdrive.stop(brakeType::brake);
   RFdrive.stop(brakeType::brake);
   RBdrive.stop(brakeType::brake);
 }
 
-void setMotorPercentage(int percentage) {
+//set motor velocity percentage
+void setDrivePercentage(int percentage) {
   LFdrive.setVelocity(percentage, percent);
   LBdrive.setVelocity(percentage, percent);
   RFdrive.setVelocity(percentage, percent);
   RBdrive.setVelocity(percentage, percent);
+}
+
+void setMotorPercentage(int percentage) {
+  setDrivePercentage(percentage);
   IntakeMotor.setVelocity(percentage, percent);
   ShootClose.setVelocity(percentage, percent);
   ShootFar.setVelocity(percentage, percent);
+}
+
+//shoot discs out of robot
+//@param intakeDeg = degrees to spin intake
+void shootDiscs(int intakeDeg) {
+  ShootClose.spin(forward);
+  ShootFar.spin(forward);
+  wait (2, sec);
+  IntakeMotor.spinFor(reverse, intakeDeg, deg);
+  ShootClose.stop(brakeType::brake);
+  ShootFar.stop(brakeType::brake);
+  IntakeMotor.stop(brakeType::brake);
 }
 
 //calibrate gyro
@@ -90,13 +130,15 @@ void resetGyro() {
   Gyro.resetHeading();
   Gyro.resetRotation();
 }
+
 void autonomous(void) {
 
   setMotorPercentage(50);
+
+  /** 
+  //starting at roller
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
-  //resetGyro();
-  //wait(1, sec);
 
   primeFirst3(-330);
   RBdrive.spinFor(reverse, 330, deg);
@@ -107,29 +149,12 @@ void autonomous(void) {
 
   primeFirst3(360);
   RBdrive.spinFor(forward, 360, deg);
-
-  /*
-  double heading = Gyro.heading();
-
-  while (Gyro.heading() <= (heading + 270)) {
-    LFdrive.spin(forward);
-    LBdrive.spin(forward);
-    RFdrive.spin(reverse);
-    RBdrive.spin(reverse);
-  }
-  LFdrive.stop(brakeType::brake);
-  LBdrive.stop(brakeType::brake);
-  RFdrive.stop(brakeType::brake);
-  RBdrive.stop(brakeType::brake);
-  */
-
   
   LFdrive.startRotateFor(reverse, 750, degrees);
   LBdrive.startRotateFor(reverse, 750, degrees);
   RFdrive.startRotateFor(forward, 750, degrees);  
   RBdrive.spinFor(forward, 750, degrees);
   
-
   primeFirst3(1700);
   RBdrive.spinFor(forward, 1700, degrees);
 
@@ -137,6 +162,28 @@ void autonomous(void) {
   ShootFar.spin(forward);
   wait(3, sec);
   IntakeMotor.spin(reverse);
+  */
+
+  /**
+  //starting before roller
+  */
+  ShootClose.spin(forward);
+  ShootFar.spin(forward);
+  wait(2, sec);
+  IntakeMotor.spinFor(reverse, 720, degrees);
+
+  driveLateral(-3600);
+  turnRobot(-650);
+
+  setDrivePercentage(15);
+  spinAllDriveReverse();
+
+  wait(1.5, sec);
+  IntakeMotor.spinFor(forward, -700, degrees);
+  stopAllDrive();
+
+  driveLateral(360);
+
 }
 
 /*---------------------------------------------------------------------------*/
