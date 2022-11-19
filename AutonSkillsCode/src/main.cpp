@@ -11,7 +11,7 @@
 // Inertial             inertial      11              
 // Endgame              motor         19              
 // Gyro                 gyro          A               
-// ---- END VEXCODE CONFIGURED DEVICES ---- 
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -109,11 +109,11 @@ void auton() {
   setDrivePercentage(35);
 
   //shoot two preloads in blue hoop
-  shootDiscs(720);
+  shootDiscs(800);
   
   //roll top rollers
   //top blue
-  driveLateral(-3650);
+  driveLateral(-3600);
   turnRobot(650);
 
   setDrivePercentage(15);
@@ -124,7 +124,9 @@ void auton() {
   stopAllDrive();
 
   //top red
-  driveLateral(1350);
+  setDrivePercentage(50);
+  driveLateral(1400);
+  setDrivePercentage(35);
   turnRobot(-695);
   spinAllDriveReverse();
   IntakeMotor.spin(reverse);
@@ -146,7 +148,7 @@ void auton() {
   //shoot picked up disc
   driveLateral(-720);
   turnRobot(-695);
-  driveLateral(2000);
+  driveLateral(1850);
   shootDiscs(1000);
 
   //go back to align w/ wall
@@ -158,7 +160,70 @@ void auton() {
   driveLateral(-1450);
   turnRobot(375);
   IntakeMotor.spin(reverse);
-  driveLateral(-1350);
+  driveLateral(-1450);
+  IntakeMotor.stop(brakeType::brake);
+
+  driveLateral(1450);
+  turnRobot(-1250);
+  driveLateral(1850);
+
+  shootDiscs(1200);
+
+  driveLateral(-1850);
+  turnRobot(1250);
+  setDrivePercentage(50);
+  driveLateral(-6000);
+  setDrivePercentage(35);
+  turnRobot(375);
+
+  //bottom red roller
+  setDrivePercentage(15);
+  spinAllDriveReverse();
+
+  wait(1.5, sec);
+  IntakeMotor.spinFor(forward, -700, degrees);
+  stopAllDrive();
+
+  //bottom blue
+  setDrivePercentage(50);
+  driveLateral(1400);
+  setDrivePercentage(35);
+  turnRobot(-695);
+  spinAllDriveReverse();
+  IntakeMotor.spin(reverse);
+  wait(2.75, sec);
+  stopAllDrive();
+  IntakeMotor.stop(brakeType::brake);
+  driveLateral(720);
+  IntakeMotor.spinFor(forward, 450, degrees);
+
+  //Endgame
+  Endgame.spin(forward);
+
+  /**
+  //align with wall, pick to middle blue discs and shoot them
+  //align
+  turnRobot(695);
+  driveLateral(1500);
+  turnRobot(695);
+  driveLateral(3000);
+
+  //shoot picked up disc
+  driveLateral(-720);
+  turnRobot(-695);
+  driveLateral(1850);
+  shootDiscs(1000);
+
+  //go back to align w/ wall
+  driveLateral(-2000);
+  turnRobot(695);
+  driveLateral(3000);
+
+  //mid red discs
+  driveLateral(-1450);
+  turnRobot(375);
+  IntakeMotor.spin(reverse);
+  driveLateral(-1450);
   IntakeMotor.stop(brakeType::brake);
   turnRobot(-900);
   driveLateral(750);
@@ -176,8 +241,14 @@ void auton() {
   shootDiscs(1000);
   
   //turn robot around and endgame
-  turnRobot(-1500);
   Endgame.spinFor(forward, 360, degrees);
+  */
+
+  //endgame
+  //Endgame.spinFor(forward, 360, degrees);
+
+  
+  
 
   /** continute auton after batavia
   //roll bottom rollers

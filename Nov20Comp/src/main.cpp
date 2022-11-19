@@ -209,6 +209,10 @@ void usercontrol(void) {
       ShootClose.spin(forward, 12.0 , voltageUnits::volt);
       ShootFar.spin(forward, 12.0, voltageUnits::volt);
     }
+    else if (Controller1.ButtonR2.pressing()) {
+      ShootClose.spin(reverse, 12.0, volt);
+      ShootFar.spin(reverse, 12.0, volt);
+    }
     else{
       ShootClose.stop();
       ShootFar.stop();
