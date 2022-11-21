@@ -120,7 +120,9 @@ void auton() {
   spinAllDriveReverse();
 
   wait(1.5, sec);
-  IntakeMotor.spinFor(forward, -700, degrees);
+  IntakeMotor.spin(forward);
+  wait(0.6, sec);
+  IntakeMotor.stop(brakeType::brake);
   stopAllDrive();
 
   //top red
@@ -130,13 +132,17 @@ void auton() {
   turnRobot(-695);
   spinAllDriveReverse();
   IntakeMotor.spin(reverse);
-  wait(2.75, sec);
+  wait(3.15, sec);
   stopAllDrive();
   IntakeMotor.stop(brakeType::brake);
   driveLateral(720);
   IntakeMotor.spinFor(forward, 450, degrees);
 
   setDrivePercentage(35);
+
+  /*
+
+  //NEW AUTON
 
   //align with wall, pick to middle blue discs and shoot them
   //align
@@ -169,6 +175,7 @@ void auton() {
 
   shootDiscs(1200);
 
+  //go to bottom rollers
   driveLateral(-1850);
   turnRobot(1250);
   setDrivePercentage(50);
@@ -199,31 +206,39 @@ void auton() {
 
   //Endgame
   Endgame.spin(forward);
+  */
 
-  /**
+  
+
+  //OLD AUTON
+
   //align with wall, pick to middle blue discs and shoot them
   //align
   turnRobot(695);
   driveLateral(1500);
   turnRobot(695);
-  driveLateral(3000);
+  setDrivePercentage(100);
+  driveLateral(720);
+  setDrivePercentage(35);
 
   //shoot picked up disc
   driveLateral(-720);
   turnRobot(-695);
-  driveLateral(1850);
+  driveLateral(2050);
   shootDiscs(1000);
 
   //go back to align w/ wall
   driveLateral(-2000);
   turnRobot(695);
-  driveLateral(3000);
+  setDrivePercentage(100);
+  driveLateral(720);
+  setDrivePercentage(35);
 
   //mid red discs
   driveLateral(-1450);
   turnRobot(375);
   IntakeMotor.spin(reverse);
-  driveLateral(-1450);
+  driveLateral(-1650);
   IntakeMotor.stop(brakeType::brake);
   turnRobot(-900);
   driveLateral(750);
@@ -235,17 +250,14 @@ void auton() {
   IntakeMotor.spin(reverse);
   driveLateral(-1500);
   IntakeMotor.stop(brakeType::brake);
-  turnRobot(-1000);
-  driveLateral(850);
+  turnRobot(-800);
+  //driveLateral(780);
 
   shootDiscs(1000);
-  
-  //turn robot around and endgame
-  Endgame.spinFor(forward, 360, degrees);
-  */
 
   //endgame
-  //Endgame.spinFor(forward, 360, degrees);
+  Endgame.spinFor(forward, 180, degrees);
+  
 
   
   

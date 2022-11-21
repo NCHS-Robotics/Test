@@ -134,26 +134,28 @@ void resetGyro() {
 void autonomous(void) {
 
   setMotorPercentage(50);
+  ShootClose.setVelocity(100, percent);
+  ShootFar.setVelocity(100, percent);
 
-  /** 
+  
   //starting at roller
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 
-  primeFirst3(-330);
-  RBdrive.spinFor(reverse, 330, deg);
+  primeFirst3(-300);
+  RBdrive.spinFor(reverse, 300, deg);
 
   IntakeMotor.spin(forward);
-  wait(1, sec);
+  wait(0.3, sec);
   IntakeMotor.stop(brakeType::brake);
 
   primeFirst3(360);
   RBdrive.spinFor(forward, 360, deg);
   
-  LFdrive.startRotateFor(reverse, 750, degrees);
-  LBdrive.startRotateFor(reverse, 750, degrees);
-  RFdrive.startRotateFor(forward, 750, degrees);  
-  RBdrive.spinFor(forward, 750, degrees);
+  LFdrive.startRotateFor(reverse, 800, degrees);
+  LBdrive.startRotateFor(reverse, 800, degrees);
+  RFdrive.startRotateFor(forward, 800, degrees);  
+  RBdrive.spinFor(forward, 800, degrees);
   
   primeFirst3(1700);
   RBdrive.spinFor(forward, 1700, degrees);
@@ -162,11 +164,10 @@ void autonomous(void) {
   ShootFar.spin(forward);
   wait(3, sec);
   IntakeMotor.spin(reverse);
-  */
+  
 
   /**
   //starting before roller
-  */
   ShootClose.spin(forward);
   ShootFar.spin(forward);
   wait(2, sec);
@@ -183,7 +184,8 @@ void autonomous(void) {
   stopAllDrive();
 
   driveLateral(360);
-
+  */
+  
 }
 
 /*---------------------------------------------------------------------------*/
