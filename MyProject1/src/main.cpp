@@ -10,10 +10,10 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// LFdrive              motor         1               
-// LBdrive              motor         11              
-// RFdrive              motor         10              
-// RBdrive              motor         20              
+// LFdrive              motor         3               
+// LBdrive              motor         1               
+// RFdrive              motor         4               
+// RBdrive              motor         2               
 // ShaftEncoder         encoder       A, B            
 // Controller1          controller                    
 // ---- END VEXCODE CONFIGURED DEVICES ----
@@ -70,16 +70,16 @@ void accelerate(int speed) {
 //PID algorithm
 //driving forward
 void PID(int endValue) {
-  double kP = .001;
-  double kI = .00001;
-  double kD = .00001; 
+  double kP = 50;
+  double kI = 0;
+  double kD = 0; 
 
   int error = 0; //P
-  int totalError = 0; //I
-  int changeInError = 0; //D
+  int integral = 0; //total error
+  int derivative = 0; //change in error
 
   int prevError = 0;
-  int desiredValue = ShaftEncoder.rotation(degrees) - endValue;
+  int desiredValue = ShaftEncoder.rotation(degrees) + endValue;
   int currentReading = ShaftEncoder.rotation(degrees);
 
   error = desiredValue - currentReading;
@@ -87,13 +87,15 @@ void PID(int endValue) {
   while (error != 0) {
     currentReading = ShaftEncoder.rotation(degrees);
     error = desiredValue - currentReading;
-    totalError += error;
-    changeInError = prevError - error;
+    integral += error;
+    derivative = prevError - error; 
 
-    double speedVolt = (error * kP) + (totalError * kI) + (changeInError * kD);
+    double speedVolt = (error * kP) ;
 
     ControllerScreen.clearScreen();
-    ControllerScreen.print(speedVolt);
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(error);
+
 
     spinVolts(forward, speedVolt);
 
