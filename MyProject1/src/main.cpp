@@ -70,7 +70,7 @@ void accelerate(int speed) {
 //PID algorithm
 //driving forward
 void PID(int endValue) {
-  double kP = 50;
+  double kP = 0.2;
   double kI = 0;
   double kD = 0; 
 
@@ -86,15 +86,25 @@ void PID(int endValue) {
 
   while (error != 0) {
     currentReading = ShaftEncoder.rotation(degrees);
+    
     error = desiredValue - currentReading;
-    integral += error;
+
+    if (error < 100 || error > -100) {
+      integral += error;
+    }
+    else {
+      integral = 0;
+    }
+
     derivative = prevError - error; 
 
-    double speedVolt = (error * kP) ;
+    double speedVolt = (error * kP);// + (integral * kI) + (derivative * kD) ;
 
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print(error);
+    ControllerScreen.setCursor(0,10);
+    ControllerScreen.print(speedVolt);
 
 
     spinVolts(forward, speedVolt);
@@ -102,6 +112,7 @@ void PID(int endValue) {
     prevError = error;
 
   }
+  stopAll(brakeType::brake);
 }
 
 int main() {
