@@ -21,6 +21,7 @@
 #include "vex.h"
 
 using namespace vex;
+using namespace std;
 
 vex::controller::lcd ControllerScreen = vex::controller::lcd();
 
@@ -70,16 +71,16 @@ void accelerate(int speed) {
 //PID algorithm
 //driving forward
 void PID(int endValue) {
-  double kP = 0.2;
-  double kI = 0;
-  double kD = 0; 
+  double kP = 0.12;
+  double kI = 0.14150;
+  double kD = 0.02544; 
 
   int error = 0; //P
   int integral = 0; //total error
   int derivative = 0; //change in error
 
   int prevError = 0;
-  int desiredValue = ShaftEncoder.rotation(degrees) + endValue;
+  int desiredValue = ShaftEncoder.rotation(degrees) + endValue; 
   int currentReading = ShaftEncoder.rotation(degrees);
 
   error = desiredValue - currentReading;
@@ -89,16 +90,20 @@ void PID(int endValue) {
     
     error = desiredValue - currentReading;
 
+    integral += error;
+
+    /**
     if (error < 100 || error > -100) {
       integral += error;
     }
     else {
       integral = 0;
     }
+    */
 
-    derivative = prevError - error; 
+    derivative = error - prevError; 
 
-    double speedVolt = (error * kP);// + (integral * kI) + (derivative * kD) ;
+    double speedVolt = (error * kP) + (integral * kI) - (derivative * kD) ;
 
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
@@ -114,6 +119,74 @@ void PID(int endValue) {
   }
   stopAll(brakeType::brake);
 }
+
+
+
+void PID2(int endValue) {
+
+  
+  bool enableDrivePID = true;
+
+  double kP = 0.01;
+  double kI = 0.001;
+  double kD = 0.001;
+
+  int pos = ShaftEncoder.position(degrees);
+
+  int desiredValue = pos + endValue;
+
+  int error = 0; //SensorValue - DesiredValue : Position
+  int prevError = 0; 
+  int derivative; //error - prevError : Speed
+  int totalError = 0; //totalError = totalError + error
+
+  //resets motors
+  bool resetDriveSensors = false;
+  while (resetDriveSensors) {
+    resetDriveSensors = false;
+
+    LFdrive.setPosition(0, degrees);
+    RFdrive.setPosition(0, degrees);
+  }
+
+  while(enableDrivePID) {
+    
+    pos = ShaftEncoder.position(degrees);
+
+    /**
+    int leftMotorPosition = LFdrive.position(degrees);
+    int rightMotorPosition = RFdrive.position(degrees);
+
+    int averagePosition = (leftMotorPosition + rightMotorPosition)/2;
+    */   
+    
+    //P
+    error = desiredValue - pos;
+
+    //Speed
+    derivative = error - prevError;
+
+    //Integral
+    totalError += error;
+
+    double lateralMotorPower = (error * kP) + (derivative * kD) + (totalError * kI);
+
+    spinVolts(forward, (-1 * lateralMotorPower));
+
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(error);
+    ControllerScreen.setCursor(0,10);
+    ControllerScreen.print(lateralMotorPower);
+
+    prevError = error;
+    vex::task::sleep(20);
+
+    
+
+  }
+}
+
 
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
@@ -135,8 +208,12 @@ int main() {
     stopAll(brake);
     */
 
-    //PI doesn't work properly
-    PID(1000);
+    //PID doesn't work properly
+    //PID(500);
+
+    PID2(500);
+
+    //controlla();
 
     //arcTurn(2,5);  //left, right
     

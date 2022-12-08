@@ -8,10 +8,10 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-motor LFdrive = motor(PORT3, ratio36_1, false);
-motor LBdrive = motor(PORT1, ratio36_1, false);
-motor RFdrive = motor(PORT4, ratio36_1, true);
-motor RBdrive = motor(PORT2, ratio36_1, true);
+motor LFdrive = motor(PORT3, ratio18_1, false);
+motor LBdrive = motor(PORT1, ratio18_1, false);
+motor RFdrive = motor(PORT4, ratio18_1, true);
+motor RBdrive = motor(PORT2, ratio18_1, true);
 encoder ShaftEncoder = encoder(Brain.ThreeWirePort.A);
 controller Controller1 = controller(primary);
 
