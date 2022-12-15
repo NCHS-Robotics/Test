@@ -1,10 +1,8 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// LFdrive              motor         3               
-// LBdrive              motor         1               
-// RFdrive              motor         4               
-// RBdrive              motor         2               
+// LeftDrive            motor         1               
+// RightDrive           motor         2               
 // IntakeMotor          motor         5               
 // ShootClose           motor         8               
 // ShootFar             motor         10              
@@ -12,7 +10,6 @@
 // Inertial             inertial      11              
 // Endgame              motor         19              
 // Gyro                 gyro          A               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -53,56 +50,51 @@ void pre_auton(void) {
   // Example: clearing encoders, setting servo positions, ...
 }
 
+/*
 //prime first 3 motors
-void primeFirst3(int deg) {
+void primeFirst(int deg) {
+  
   LFdrive.startRotateFor(forward, deg, degrees);
   LBdrive.startRotateFor(forward, deg, degrees);
   RFdrive.startRotateFor(forward, deg, degrees);
+  
 }
+*/
 
 //drive laterally
 void driveLateral(int deg) {
-  primeFirst3(deg);
-  RBdrive.spinFor(forward, deg, degrees);
+  //primeFirst3(deg);
+  LeftDrive.startRotateFor(forward, deg, degrees);
+  RightDrive.spinFor(forward, deg, degrees);
 }
 
 //turn the robot
 void turnRobot(int deg) {
-  LFdrive.startRotateFor(forward, deg, degrees);
-  LBdrive.startRotateFor(forward, deg, degrees);
-  RFdrive.startRotateFor(reverse, deg, degrees);
-  RBdrive.spinFor(reverse, deg, degrees);
+  LeftDrive.startRotateFor(forward, deg, degrees);
+  RightDrive.spinFor(reverse, deg, degrees);
 }
 
 //spin all drive motors
 void spinAllDriveForward() {
-  LFdrive.spin(forward);
-  LBdrive.spin(forward);
-  RFdrive.spin(forward);
-  RBdrive.spin(forward);
+  LeftDrive.spin(forward);
+  RightDrive.spin(forward);
 }
 
 void spinAllDriveReverse() {
-  LFdrive.spin(reverse);
-  LBdrive.spin(reverse);
-  RFdrive.spin(reverse);
-  RBdrive.spin(reverse);
+  LeftDrive.spin(reverse);
+  RightDrive.spin(reverse);
 }
 
 //stop all drive motors
 void stopAllDrive() {
-  LFdrive.stop(brakeType::brake);
-  LBdrive.stop(brakeType::brake);
-  RFdrive.stop(brakeType::brake);
-  RBdrive.stop(brakeType::brake);
+  LeftDrive.stop(brakeType::brake);
+  RightDrive.stop(brakeType::brake);
 }
 
 //set motor velocity percentage
 void setDrivePercentage(int percentage) {
-  LFdrive.setVelocity(percentage, percent);
-  LBdrive.setVelocity(percentage, percent);
-  RFdrive.setVelocity(percentage, percent);
-  RBdrive.setVelocity(percentage, percent);
+  LeftDrive.setVelocity(percentage, percent);
+  RightDrive.setVelocity(percentage, percent);
 }
 
 void setMotorPercentage(int percentage) {
@@ -166,10 +158,15 @@ void usercontrol(void) {
     double turnVolts = -(turnVal) * 0.12;
     double forwardVolts = forwardVal * 0.12 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
 
+    LeftDrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
+    RightDrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
+
+    /*
     LFdrive.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
     LBdrive.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
     RFdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RBdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
+    */
 
     //double suckVal = Controller1.ButtonL1.pressing();
     //double suckVolts = suckVal * 0.12;

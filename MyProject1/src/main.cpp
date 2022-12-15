@@ -71,7 +71,7 @@ void accelerate(int speed) {
 //PID algorithm
 //driving forward
 void PID(int endValue) {
-  double kP = 0.12;
+  double kP = 0.2;
   double kI = 0.14150;
   double kD = 0.02544; 
 
@@ -103,7 +103,7 @@ void PID(int endValue) {
 
     derivative = error - prevError; 
 
-    double speedVolt = (error * kP) + (integral * kI) - (derivative * kD) ;
+    double speedVolt = (error * kP);// + (integral * kI) - (derivative * kD) ;
 
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
@@ -127,9 +127,9 @@ void PID2(int endValue) {
   
   bool enableDrivePID = true;
 
-  double kP = 0.01;
-  double kI = 0.001;
-  double kD = 0.001;
+  double kP = 0.015;
+  double kI = 0.00012;
+  double kD = 0.00075;
 
   int pos = ShaftEncoder.position(degrees);
 
@@ -151,23 +151,34 @@ void PID2(int endValue) {
 
   while(enableDrivePID) {
     
+    /*
+    if (error < 5 && error > -5) {
+      wait(20, msec);
+      if (error < 5 || error > -5) {
+        enableDrivePID = false;
+        break;
+      }
+    }
+    */
+
     pos = ShaftEncoder.position(degrees);
 
     /**
     int leftMotorPosition = LFdrive.position(degrees);
     int rightMotorPosition = RFdrive.position(degrees);
-
     int averagePosition = (leftMotorPosition + rightMotorPosition)/2;
     */   
     
     //P
     error = desiredValue - pos;
 
-    //Speed
+    //Speed - D
     derivative = error - prevError;
 
-    //Integral
-    totalError += error;
+    //Integral - I
+    if (error < 133) {
+      totalError += error;
+    }
 
     double lateralMotorPower = (error * kP) + (derivative * kD) + (totalError * kI);
 
@@ -181,9 +192,6 @@ void PID2(int endValue) {
 
     prevError = error;
     vex::task::sleep(20);
-
-    
-
   }
 }
 
