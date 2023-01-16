@@ -1,15 +1,17 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// LeftDrive            motor         1               
-// RightDrive           motor         2               
+// LBdrive              motor         1               
+// RBdrive              motor         2               
 // IntakeMotor          motor         5               
-// ShootClose           motor         8               
-// ShootFar             motor         10              
+// ShootClose           motor         6               
+// ShootFar             motor         7               
 // Controller1          controller                    
-// Inertial             inertial      11              
-// Endgame              motor         19              
-// Gyro                 gyro          A               
+// Endgame              motor         20              
+// LFdrive              motor         11              
+// RFdrive              motor         4               
+// Lift                 motor         8               
+// ---- END VEXCODE CONFIGURED DEVICES ----            
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -62,6 +64,7 @@ void primeFirst(int deg) {
 */
 
 //drive laterally
+/*
 void driveLateral(int deg) {
   //primeFirst3(deg);
   LeftDrive.startRotateFor(forward, deg, degrees);
@@ -122,6 +125,7 @@ void resetGyro() {
   Gyro.resetHeading();
   Gyro.resetRotation();
 }
+*/
 
 
 /*---------------------------------------------------------------------------*/
@@ -149,7 +153,6 @@ void usercontrol(void) {
     Brain.Screen.printAt(1,40,"RPM:%f",ShootClose.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,80,"RPM:%f",ShootFar.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,120,"RPM:%f",IntakeMotor.velocity(vex::velocityUnits::rpm));\
-    Brain.Screen.printAt(1,160, "Heading Angle:%f",Gyro.value(deg));
     Brain.Screen.render();
     
     double turnVal = Controller1.Axis4.position(percent);
@@ -158,29 +161,65 @@ void usercontrol(void) {
     double turnVolts = -(turnVal) * 0.12;
     double forwardVolts = forwardVal * 0.12 * (1 - (std::abs(turnVolts)/12.0) * turnImportance);
 
-    LeftDrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-    RightDrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-
-    /*
     LFdrive.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
     LBdrive.spin(forward, forwardVolts + turnVolts, voltageUnits::volt);
     RFdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RBdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
-    */
 
     //double suckVal = Controller1.ButtonL1.pressing();
     //double suckVolts = suckVal * 0.12;
     
-    if (Controller1.ButtonL2.pressing()){
-      IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
-    }
-    else if (Controller1.ButtonL1.pressing()){
+    if (Controller1.ButtonL2.pressing()){ //in
       IntakeMotor.spin(forward, -12.0 , voltageUnits::volt);
+    }
+    else if (Controller1.ButtonL1.pressing()){ //out
+      IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
     }
     else{
       IntakeMotor.stop();
     }
     
+    //user shoot
+    if (Controller1.ButtonR1.pressing()) {
+      ShootClose.spin(forward, 7, volt);
+      ShootFar.spin(reverse, 7, volt);
+    }
+    else {
+      ShootClose.stop(brake);
+      ShootFar.stop(brake);
+    }
+
+    //distance shoot
+    if (Controller1.ButtonR2.pressing()) {
+      ShootClose.spin(forward, 12, volt);
+      ShootFar.spin(reverse, 12, volt);
+    }
+    /*
+    else {
+      ShootClose.stop(brake);
+      ShootFar.stop(brake);
+    }
+    */
+
+    //lift that moves shooter up and down
+    if (Controller1.ButtonB.pressing()) {
+      Lift.spin(reverse, 12, volt);
+    }
+    else if (Controller1.ButtonX.pressing()) {
+      Lift.spin(forward, 12, volt);
+    }
+    else {
+      Lift.stop(brake);
+    }
+
+    //flywheel spins backwards to activate endgame
+    if (Controller1.ButtonUp.pressing()) {
+      ShootClose.spin(forward, -12, volt);
+      ShootFar.spin(reverse, -12, volt);
+    }
+
+
+    //controller code that didn't work lol
     
     /*void Shoot() {
       Shootabig.spin(reverse, 12.0 , voltageUnits::volt);
@@ -209,10 +248,8 @@ void usercontrol(void) {
     }
     */
     
-    
-
     //coast at 210 rpm when holding shoot button
-    /**/
+    /*
     //R1 = close shoot
     if (Controller1.ButtonR1.pressing()){
       ShootClose.setVelocity(50, percent);
@@ -231,13 +268,12 @@ void usercontrol(void) {
       ShootClose.stop();
       ShootFar.stop();
     }
-    /**/
-    
+    */
 
     //Suck.spin(forward, suckVolts , voltageUnits::volt);
     //Suck.spin(reverse, suckVolts , voltageUnits::volt);
 
-    
+    /*
     if (Controller1.ButtonUp.pressing()){ 
       Endgame.spin(forward, 12.0, voltageUnits::volt);
     }
@@ -247,7 +283,7 @@ void usercontrol(void) {
     else{
       Endgame.stop(brakeType::hold);
     }
-    
+    */
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
