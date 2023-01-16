@@ -10,7 +10,7 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// LFdrive              motor         3               
+// LFdrive              motor         11              
 // LBdrive              motor         1               
 // RFdrive              motor         4               
 // RBdrive              motor         2               
@@ -31,6 +31,14 @@ void driveAll(vex::directionType dir) {
   LBdrive.spin(dir);
   RFdrive.spin(dir);
   RBdrive.spin(dir);
+}
+
+//driveAll with set degrees
+void driveAllFor(vex::directionType dir, int degrees) {
+  LFdrive.startRotateFor(dir, degrees, deg);
+  LBdrive.startRotateFor(dir, degrees, deg);
+  RFdrive.startRotateFor(dir, degrees, deg);
+  RBdrive.spinFor(dir, degrees, deg);
 }
 
 //stop all the motors given a brakeType
@@ -70,6 +78,7 @@ void accelerate(int speed) {
 
 //PID algorithm
 //driving forward
+/*
 void PID(int endValue) {
   double kP = 0.2;
   double kI = 0.14150;
@@ -92,14 +101,14 @@ void PID(int endValue) {
 
     integral += error;
 
-    /**
+    
     if (error < 100 || error > -100) {
       integral += error;
     }
     else {
       integral = 0;
     }
-    */
+    
 
     derivative = error - prevError; 
 
@@ -119,7 +128,7 @@ void PID(int endValue) {
   }
   stopAll(brakeType::brake);
 }
-
+*/
 
 
 void PID2(int endValue) {
@@ -127,9 +136,16 @@ void PID2(int endValue) {
   
   bool enableDrivePID = true;
 
-  double kP = 0.015;
-  double kI = 0.00012;
-  double kD = 0.00075;
+  //double kP = 0.065; //dummy bot
+  //main bot w 3 motors
+  //double kP = 0.109; //no I variable
+  double kP = 0.055; 
+  double kI = 0.005;
+  double kD = 0.02; //breaks integral varibale
+
+  //constants not used (set for dummy bot)
+  
+  //double kD = 0.2;
 
   int pos = ShaftEncoder.position(degrees);
 
@@ -140,6 +156,7 @@ void PID2(int endValue) {
   int derivative; //error - prevError : Speed
   int totalError = 0; //totalError = totalError + error
 
+  /*
   //resets motors
   bool resetDriveSensors = false;
   while (resetDriveSensors) {
@@ -148,8 +165,11 @@ void PID2(int endValue) {
     LFdrive.setPosition(0, degrees);
     RFdrive.setPosition(0, degrees);
   }
+  */
 
-  while(enableDrivePID) {
+  int countCheck = 0;
+
+  while(enableDrivePID && countCheck < 5) {
     
     /*
     if (error < 5 && error > -5) {
@@ -161,28 +181,37 @@ void PID2(int endValue) {
     }
     */
 
-    pos = ShaftEncoder.position(degrees);
+    /*
+    if (countCheck > 10 || countCheck < -10) {
+      countCheck = 0;
+    }
+    */
 
-    /**
+    //pos = ShaftEncoder.position(degrees);
+
+    
     int leftMotorPosition = LFdrive.position(degrees);
     int rightMotorPosition = RFdrive.position(degrees);
-    int averagePosition = (leftMotorPosition + rightMotorPosition)/2;
-    */   
+    int averagePosition = (leftMotorPosition + rightMotorPosition) / 2;
+      
     
     //P
-    error = desiredValue - pos;
+    error = desiredValue - averagePosition;
 
     //Speed - D
     derivative = error - prevError;
 
     //Integral - I
-    if (error < 133) {
+    
+    if (error < 50 && error > -50) {
       totalError += error;
     }
+    
+    //totalError += error;
 
-    double lateralMotorPower = (error * kP) + (derivative * kD) + (totalError * kI);
+    double lateralMotorPower = (error * kP) + (totalError * kI);
 
-    spinVolts(forward, (-1 * lateralMotorPower));
+    spinVolts(forward, lateralMotorPower);
 
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
@@ -191,8 +220,15 @@ void PID2(int endValue) {
     ControllerScreen.print(lateralMotorPower);
 
     prevError = error;
+
+    if (error < 10 && error > -10) {
+        countCheck++;
+    }
+
     vex::task::sleep(20);
   }
+
+  stopAll(brake);
 }
 
 
@@ -219,7 +255,10 @@ int main() {
     //PID doesn't work properly
     //PID(500);
 
-    PID2(500);
+
+    ///driveAllFor(reverse, -150);
+    PID2(300);
+    ControllerScreen.print("Done");
 
     //controlla();
 
