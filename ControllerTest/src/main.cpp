@@ -146,6 +146,9 @@ void usercontrol(void) {
 
   Brain.Screen.clearScreen();
   double turnImportance = 0.5;
+
+  Lift.setPosition(0, degrees);
+
   // place driver control in this while loop
   while (true) {
 
@@ -217,6 +220,11 @@ void usercontrol(void) {
       ShootClose.spin(forward, -12, volt);
       ShootFar.spin(reverse, -12, volt);
     }
+
+    
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Lift.position(degrees));
 
 
     //controller code that didn't work lol
