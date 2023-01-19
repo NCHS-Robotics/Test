@@ -13,6 +13,7 @@ extern motor Endgame;
 extern motor LFdrive;
 extern motor RFdrive;
 extern motor Lift;
+extern inertial Inertial;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

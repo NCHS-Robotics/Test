@@ -11,6 +11,21 @@
 // LFdrive              motor         11              
 // RFdrive              motor         4               
 // Lift                 motor         8               
+// Inertial             inertial      16              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LBdrive              motor         1               
+// RBdrive              motor         2               
+// IntakeMotor          motor         5               
+// ShootClose           motor         6               
+// ShootFar             motor         7               
+// Controller1          controller                    
+// Endgame              motor         20              
+// LFdrive              motor         11              
+// RFdrive              motor         4               
+// Lift                 motor         8               
 // ---- END VEXCODE CONFIGURED DEVICES ----            
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -148,6 +163,8 @@ void usercontrol(void) {
   double turnImportance = 0.5;
 
   Lift.setPosition(0, degrees);
+  Inertial.resetHeading();
+  Inertial.resetRotation();
 
   // place driver control in this while loop
   while (true) {
@@ -224,7 +241,11 @@ void usercontrol(void) {
     
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
-    ControllerScreen.print(Lift.position(degrees));
+    //ControllerScreen.print(Lift.position(degrees)); //testing lift
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Inertial.heading(degrees)); //testing inertial heading
+    ControllerScreen.setCursor(0, 15);
+    ControllerScreen.print(Inertial.rotation(degrees)); //testing inertial rotation
 
 
     //controller code that didn't work lol

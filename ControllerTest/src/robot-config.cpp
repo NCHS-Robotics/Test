@@ -18,6 +18,7 @@ motor Endgame = motor(PORT20, ratio18_1, false);
 motor LFdrive = motor(PORT11, ratio6_1, false);
 motor RFdrive = motor(PORT4, ratio6_1, true);
 motor Lift = motor(PORT8, ratio18_1, false);
+inertial Inertial = inertial(PORT16);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
