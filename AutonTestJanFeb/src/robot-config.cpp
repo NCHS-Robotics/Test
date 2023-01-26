@@ -18,7 +18,7 @@ motor ShootFar = motor(PORT7, ratio18_1, false);
 controller Controller1 = controller(primary);
 motor Endgame = motor(PORT20, ratio18_1, false);
 motor Lift = motor(PORT8, ratio18_1, false);
-inertial Inertial = inertial(PORT16);
+inertial Inertial = inertial(PORT12);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

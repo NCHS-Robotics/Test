@@ -11,22 +11,8 @@
 // LFdrive              motor         11              
 // RFdrive              motor         4               
 // Lift                 motor         8               
-// Inertial             inertial      16              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LBdrive              motor         1               
-// RBdrive              motor         2               
-// IntakeMotor          motor         5               
-// ShootClose           motor         6               
-// ShootFar             motor         7               
-// Controller1          controller                    
-// Endgame              motor         20              
-// LFdrive              motor         11              
-// RFdrive              motor         4               
-// Lift                 motor         8               
-// ---- END VEXCODE CONFIGURED DEVICES ----            
+// Inertial             inertial      12              
+// ---- END VEXCODE CONFIGURED DEVICES ----         
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -66,82 +52,6 @@ void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
-
-/*
-//prime first 3 motors
-void primeFirst(int deg) {
-  
-  LFdrive.startRotateFor(forward, deg, degrees);
-  LBdrive.startRotateFor(forward, deg, degrees);
-  RFdrive.startRotateFor(forward, deg, degrees);
-  
-}
-*/
-
-//drive laterally
-/*
-void driveLateral(int deg) {
-  //primeFirst3(deg);
-  LeftDrive.startRotateFor(forward, deg, degrees);
-  RightDrive.spinFor(forward, deg, degrees);
-}
-
-//turn the robot
-void turnRobot(int deg) {
-  LeftDrive.startRotateFor(forward, deg, degrees);
-  RightDrive.spinFor(reverse, deg, degrees);
-}
-
-//spin all drive motors
-void spinAllDriveForward() {
-  LeftDrive.spin(forward);
-  RightDrive.spin(forward);
-}
-
-void spinAllDriveReverse() {
-  LeftDrive.spin(reverse);
-  RightDrive.spin(reverse);
-}
-
-//stop all drive motors
-void stopAllDrive() {
-  LeftDrive.stop(brakeType::brake);
-  RightDrive.stop(brakeType::brake);
-}
-
-//set motor velocity percentage
-void setDrivePercentage(int percentage) {
-  LeftDrive.setVelocity(percentage, percent);
-  RightDrive.setVelocity(percentage, percent);
-}
-
-void setMotorPercentage(int percentage) {
-  setDrivePercentage(percentage);
-  IntakeMotor.setVelocity(percentage, percent);
-  ShootClose.setVelocity(percentage, percent);
-  ShootFar.setVelocity(percentage, percent);
-}
-
-//shoot discs out of robot
-//@param intakeDeg = degrees to spin intake
-void shootDiscs(int intakeDeg) {
-  ShootClose.spin(forward);
-  ShootFar.spin(forward);
-  wait (2, sec);
-  IntakeMotor.spinFor(reverse, intakeDeg, deg);
-  ShootClose.stop(brakeType::brake);
-  ShootFar.stop(brakeType::brake);
-  IntakeMotor.stop(brakeType::brake);
-}
-
-//calibrate gyro
-void resetGyro() {
-  Gyro.resetAngle();
-  Gyro.resetHeading();
-  Gyro.resetRotation();
-}
-*/
-
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -200,7 +110,7 @@ void usercontrol(void) {
     }
     
     //user shoot
-    if (Controller1.ButtonR1.pressing()) {
+    if (Controller1.ButtonR1.pressing()) {      
       ShootClose.spin(forward, 7, volt);
       ShootFar.spin(reverse, 7, volt);
     }
@@ -211,15 +121,17 @@ void usercontrol(void) {
 
     //distance shoot
     if (Controller1.ButtonR2.pressing()) {
+      /*
+      ControllerScreen.clearScreen();
+      ControllerScreen.setCursor(0,0);
+      ControllerScreen.print(ShootClose.velocity(vex::velocityUnits::rpm));
+      ControllerScreen.setCursor(5,0);
+      ControllerScreen.print(ShootFar.velocity(vex::velocityUnits::rpm));
+      */
+
       ShootClose.spin(forward, 12, volt);
       ShootFar.spin(reverse, 12, volt);
     }
-    /*
-    else {
-      ShootClose.stop(brake);
-      ShootFar.stop(brake);
-    }
-    */
 
     //lift that moves shooter up and down
     if (Controller1.ButtonB.pressing()) {
@@ -232,87 +144,17 @@ void usercontrol(void) {
       Lift.stop(brake);
     }
 
+    //testing shooter range
+    if (Controller1.ButtonLeft.pressing()) {
+      ShootClose.spin(forward, 8.5, volt);
+      ShootFar.spin(reverse, 8.5, volt);
+    }
+
     //flywheel spins backwards to activate endgame
     if (Controller1.ButtonUp.pressing()) {
       ShootClose.spin(forward, -12, volt);
       ShootFar.spin(reverse, -12, volt);
     }
-
-    
-    ControllerScreen.clearScreen();
-    ControllerScreen.setCursor(0,0);
-    //ControllerScreen.print(Lift.position(degrees)); //testing lift
-    ControllerScreen.setCursor(0,0);
-    ControllerScreen.print(Inertial.heading(degrees)); //testing inertial heading
-    ControllerScreen.setCursor(0, 15);
-    ControllerScreen.print(Inertial.rotation(degrees)); //testing inertial rotation
-
-
-    //controller code that didn't work lol
-    
-    /*void Shoot() {
-      Shootabig.spin(reverse, 12.0 , voltageUnits::volt);
-    }
-    void Nothing() {
-      Shootabig.spin(forward, 0 , voltageUnits::volt);
-    }
-
-    Controller1.ButtonR1.pressed(Shoot);
-    Controller1.ButtonR2.pressed(Nothing);
-    */
-
-    //regular shoot
-    /*
-    if (Controller1.ButtonR1.pressing()){
-      ShootClose.spin(forward, 12.0 , voltageUnits::volt);
-      ShootFar.spin(forward, 12.0, voltageUnits::volt);
-    }
-    else if (Controller1.ButtonR2.pressing()) {
-      ShootClose.spin(reverse, 12.0, volt);
-      ShootFar.spin(reverse, 12.0, volt);
-    }
-    else{
-      ShootClose.stop();
-      ShootFar.stop();
-    }
-    */
-    
-    //coast at 210 rpm when holding shoot button
-    /*
-    //R1 = close shoot
-    if (Controller1.ButtonR1.pressing()){
-      ShootClose.setVelocity(50, percent);
-      ShootFar.setVelocity(50, percent);
-      ShootClose.spin(forward);
-      ShootFar.spin(forward);
-    }
-    //R2 = far shoot
-    else if (Controller1.ButtonR2.pressing()) {
-      ShootClose.setVelocity(100, percent);
-      ShootFar.setVelocity(100, percent);
-      ShootClose.spin(forward);
-      ShootFar.spin(forward);
-    }
-    else{
-      ShootClose.stop();
-      ShootFar.stop();
-    }
-    */
-
-    //Suck.spin(forward, suckVolts , voltageUnits::volt);
-    //Suck.spin(reverse, suckVolts , voltageUnits::volt);
-
-    /*
-    if (Controller1.ButtonUp.pressing()){ 
-      Endgame.spin(forward, 12.0, voltageUnits::volt);
-    }
-    else if(Controller1.ButtonDown.pressing()) {
-      Endgame.spin(reverse, 12.0, voltageUnits::volt);
-    }
-    else{
-      Endgame.stop(brakeType::hold);
-    }
-    */
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

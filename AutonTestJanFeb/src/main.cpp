@@ -20,7 +20,7 @@
 // Controller1          controller                    
 // Endgame              motor         20              
 // Lift                 motor         8               
-// Inertial             inertial      16              
+// Inertial             inertial      12              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -62,6 +62,14 @@ void driveAllFor(vex::directionType dir, int degrees) {
   RBdrive.spinFor(dir, degrees, deg);
 }
 
+//stop all the motors given a brakeType
+void stopAll(vex::brakeType stopType) {
+  LFdrive.stop(stopType);
+  LBdrive.stop(stopType);
+  RFdrive.stop(stopType);
+  RBdrive.stop(stopType);
+}
+
 //spin all the motors given a direction and voltage
 void spinVolts(directionType dir, int volts) {
   LFdrive.spin(dir, volts, volt);
@@ -85,16 +93,55 @@ void turnRight(int degrees) {
   RBdrive.spinFor(forward, degrees, deg);
 }
 
+//using inertial sensor
+void turnLeftInertial(int headingVal) {
+  setDrivePercentage(20);
+  Inertial.setHeading(359.99, degrees);
+
+  while(Inertial.heading(degrees) >= (360 - headingVal)) {
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Inertial.heading(degrees));
+
+    LFdrive.spin(forward);
+    LBdrive.spin(forward);
+    RFdrive.spin(reverse);
+    RBdrive.spin(reverse);
+  }
+  stopAll(brake);
+  ControllerScreen.clearScreen();
+  ControllerScreen.setCursor(0,0);
+  ControllerScreen.print("done turning");
+  ControllerScreen.setCursor(5,0);
+  ControllerScreen.print(Inertial.heading(degrees));
+}
+
+void turnRightInertial(int headingVal) {
+  setDrivePercentage(20);
+  Inertial.setHeading(0.1, degrees);
+
+  while(Inertial.heading(degrees) <= headingVal) {
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Inertial.heading(degrees));
+
+    LFdrive.spin(reverse);
+    LBdrive.spin(reverse);
+    RFdrive.spin(forward);
+    RBdrive.spin(forward);
+  }
+  stopAll(brake);
+  ControllerScreen.clearScreen();
+  ControllerScreen.setCursor(0,0);
+  ControllerScreen.print("done turning");
+  ControllerScreen.setCursor(5,0);
+  ControllerScreen.print(Inertial.heading(degrees));
+}
+
 //shoot the discs
-void shootDiscs(int wait1, int wait2) {
-  ShootClose.spin(forward);
-  ShootFar.spin(forward);
-  wait(wait1, sec);
-  IntakeMotor.spin(forward);
-  wait(wait2, sec);
-  IntakeMotor.stop(brake);
-  ShootClose.stop(brake);
-  ShootFar.stop(brake);
+void shootDiscs(double volts) {
+  ShootClose.spin(forward, volts, volt);
+  ShootFar.spin(forward, volts, volt);
 }
 
 void shootDiscsFor(int deg) {
@@ -102,42 +149,13 @@ void shootDiscsFor(int deg) {
   ShootFar.spinFor(forward, deg, degrees);
 }
 
-//stop all the motors given a brakeType
-void stopAll(vex::brakeType stopType) {
-  LFdrive.stop(stopType);
-  LBdrive.stop(stopType);
-  RFdrive.stop(stopType);
-  RBdrive.stop(stopType);
+void stopDiscs() {
+  IntakeMotor.stop(brake);
+  ShootClose.stop(brake);
+  ShootFar.stop(brake);
 }
 
-//test the lift
-void testLift() {
-  Lift.setPosition(0, degrees);
-  while(true) {
-    ControllerScreen.clearScreen();
-    ControllerScreen.print(Lift.position(degrees));
-  }
-}
 
-//turning w initial sensor
-void turnLeftInertial(int head) {
-  setDrivePercentage(15);
-  LFdrive.spin(forward);
-  LBdrive.spin(forward);
-  RFdrive.spin(reverse);
-  RBdrive.spin(reverse);
-  int stopValue = Inertial.rotation(degrees) + head;
-  if ((Inertial.rotation(degrees) > stopValue - 5) && (Inertial.rotation(degrees) < stopValue + 5)) {
-    ControllerScreen.print("Done");
-    stopAll(brake);
-  }
-
-  /*
-  if ((Inertial.heading(degrees) > head - 5) && (Inertial.heading(degrees) < head + 5)) {
-    stopAll(brake);
-  }
-  */
-} 
 
 //PI Controller to move forward and back
 void pi(int endValue) {  
@@ -163,17 +181,6 @@ void pi(int endValue) {
   int prevError = 0; 
   int derivative; //error - prevError : Speed
   int totalError = 0; //totalError = totalError + error
-
-  /*
-  //resets motors
-  bool resetDriveSensors = false;
-  while (resetDriveSensors) {
-    resetDriveSensors = false;
-
-    LFdrive.setPosition(0, degrees);
-    RFdrive.setPosition(0, degrees);
-  }
-  */
 
   int countCheck = 0;
 
@@ -222,45 +229,96 @@ void pi(int endValue) {
   stopAll(brake);
 }
 
+void testInertial() {
+  setDrivePercentage(5);
+
+  Inertial.setHeading(0.01, degrees);
+
+  ControllerScreen.clearScreen();
+  ControllerScreen.print(Inertial.heading(degrees));
+  //ControllerScreen.print(Inertial.heading(degrees) <= 90);
+
+  for (int i = 0; i < 4; i++) {
+
+    Inertial.setHeading(0, degrees);
+
+    pi(500);
+
+    while (Inertial.heading(degrees) <= 90 || Inertial.heading(degrees) > 355) {
+      ControllerScreen.clearScreen();
+      ControllerScreen.setCursor(0,0);
+      ControllerScreen.print(Inertial.heading(degrees));
+      /*
+      LFdrive.spin(forward);
+      LBdrive.spin(forward);
+      RFdrive.spin(reverse);
+      RBdrive.spin(reverse);  
+      */
+      
+      /**/
+      LFdrive.spin(reverse);
+      LBdrive.spin(reverse);
+      RFdrive.spin(forward);
+      RBdrive.spin(forward);
+    }
+    
+
+    stopAll(brake);
+    ControllerScreen.clearScreen();
+    ControllerScreen.print("Done Turning");
+    ControllerScreen.setCursor(7,0);
+    ControllerScreen.print(Inertial.heading(degrees));
+  }
+}
+
 void auton() {
   
   init();
 
   //LIFT MOVES 1429 DEGREES TO SWITCH FROM LOW TO HIGH
   //need to shoot first then move lift up and go to roller
-  //forward = down, reverse = up (lift)
 
   //shoot 2 discs
-  shootDiscs(4, 3);
+  shootDiscs(7.8);
+  wait(3.5, sec);
+  IntakeMotor.spinFor(forward, 550, degrees);
+  wait(2, sec);
+  IntakeMotor.spinFor(forward, 900, degrees);
+  stopDiscs();
 
   //lift shooter
-  Lift.spinFor(reverse, 1429, degrees);
+  Lift.spinFor(forward, 1429, degrees);
 
   //roll roller
-  turnLeft(600);
+  turnLeftInertial(80);
+  driveAllFor(reverse, 630);
   IntakeMotor.spin(forward);
-  driveAllFor(reverse, 250);
   wait(0.3, sec);
-  driveAllFor(forward, 250);
-  IntakeMotor.stop();
+  IntakeMotor.stop(brake);
 
   //pick up corner disc
-  turnRight(900);
+  driveAllFor(forward, 100);
+  turnLeftInertial(260);
   IntakeMotor.spin(forward);
-  pi(500);
-  IntakeMotor.stop();
+  driveAllFor(reverse, 700);
+  IntakeMotor.stop(brake);
 
   //roll roller
-  turnLeft(900);
+  turnLeftInertial(0);
+  driveAllFor(reverse, 80);
   IntakeMotor.spin(forward);
-  driveAllFor(reverse, 250);
   wait(0.3, sec);
-  driveAllFor(forward, 250);
-  IntakeMotor.stop();
+  IntakeMotor.stop(brake);
 
   //shoot 1 disc
-  turnLeft(600);
-  shootDiscs(4, 2);
+  driveAllFor(forward, 100);
+  IntakeMotor.spinFor(reverse, 100, degrees);
+  driveAllFor(forward, 530);
+  turnRightInertial(90);
+  shootDiscs(8);
+  wait(3.5, sec);
+  IntakeMotor.spinFor(forward, 550, degrees);
+
 
 
   //pick up 3 discs in a row
@@ -279,8 +337,6 @@ void auton() {
   //endgame
 }
 
-
-
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -292,14 +348,13 @@ int main() {
   }
   ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
-    ControllerScreen.print("done");
+    ControllerScreen.print("done calibrating");
 
-  //testLift();
-  turnLeftInertial(90);
+  auton();
 
-  //auton();
+  //turnLeftInertial(80);
+  //turnRightInertial(80);
 
-
-  //auton();
-
+  //reset the lift | change direciton if needed
+  //Lift.spinFor(reverse, 1429, degrees);  
 }
