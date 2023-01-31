@@ -14,6 +14,8 @@ extern controller Controller1;
 extern motor Endgame;
 extern motor Lift;
 extern inertial Inertial;
+extern limit LimitSwitchFar;
+extern limit LimitSwitchIntake;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

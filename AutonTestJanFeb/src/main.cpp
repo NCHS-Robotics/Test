@@ -98,7 +98,7 @@ void turnLeftInertial(int headingVal) {
   setDrivePercentage(20);
   Inertial.setHeading(359.99, degrees);
 
-  while(Inertial.heading(degrees) >= (360 - headingVal)) {
+  while(Inertial.heading(degrees) >= (360 - headingVal) || (Inertial.heading(degrees) < 1)) {
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print(Inertial.heading(degrees));
@@ -120,7 +120,7 @@ void turnRightInertial(int headingVal) {
   setDrivePercentage(20);
   Inertial.setHeading(0.1, degrees);
 
-  while(Inertial.heading(degrees) <= headingVal) {
+  while(Inertial.heading(degrees) <= headingVal || (Inertial.heading(degrees) > 359)) {
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print(Inertial.heading(degrees));
@@ -271,6 +271,21 @@ void testInertial() {
   }
 }
 
+void resetLiftFar() {
+  while (!(LimitSwitchFar.pressing())) {
+    Lift.spin(reverse);
+  }
+  Lift.stop(brake);
+}
+
+void resetLiftIntake() {
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.spinFor(forward, 3, degrees);
+  Lift.stop(brake);
+}
+
 void auton() {
   
   init();
@@ -282,12 +297,16 @@ void auton() {
   shootDiscs(7.8);
   wait(3.5, sec);
   IntakeMotor.spinFor(forward, 550, degrees);
-  wait(2, sec);
-  IntakeMotor.spinFor(forward, 900, degrees);
+  wait(1.75, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
   stopDiscs();
 
   //lift shooter
-  Lift.spinFor(forward, 1429, degrees);
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.spinFor(forward, 3, degrees);
+  Lift.stop(brake);
 
   //roll roller
   turnLeftInertial(80);
@@ -297,14 +316,15 @@ void auton() {
   IntakeMotor.stop(brake);
 
   //pick up corner disc
-  driveAllFor(forward, 100);
-  turnLeftInertial(260);
+  driveAllFor(forward, 830);
+  turnRightInertial(80);
   IntakeMotor.spin(forward);
   driveAllFor(reverse, 700);
   IntakeMotor.stop(brake);
 
+/*
   //roll roller
-  turnLeftInertial(0);
+  turnLeftInertial(80);
   driveAllFor(reverse, 80);
   IntakeMotor.spin(forward);
   wait(0.3, sec);
@@ -318,6 +338,7 @@ void auton() {
   shootDiscs(8);
   wait(3.5, sec);
   IntakeMotor.spinFor(forward, 550, degrees);
+  */
 
 
 
@@ -352,9 +373,6 @@ int main() {
 
   auton();
 
-  //turnLeftInertial(80);
-  //turnRightInertial(80);
-
-  //reset the lift | change direciton if needed
-  //Lift.spinFor(reverse, 1429, degrees);  
+  //resetLiftFar();
+  //resetLiftIntake();
 }

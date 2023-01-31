@@ -19,6 +19,8 @@ controller Controller1 = controller(primary);
 motor Endgame = motor(PORT20, ratio18_1, false);
 motor Lift = motor(PORT8, ratio18_1, false);
 inertial Inertial = inertial(PORT12);
+limit LimitSwitchFar = limit(Brain.ThreeWirePort.A);
+limit LimitSwitchIntake = limit(Brain.ThreeWirePort.B);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
