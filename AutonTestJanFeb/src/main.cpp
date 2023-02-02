@@ -290,18 +290,15 @@ void auton() {
   
   init();
 
-  //LIFT MOVES 1429 DEGREES TO SWITCH FROM LOW TO HIGH
-  //need to shoot first then move lift up and go to roller
-
   //shoot 2 discs
   shootDiscs(7.8);
-  wait(3.5, sec);
-  IntakeMotor.spinFor(forward, 550, degrees);
-  wait(1.75, sec);
-  IntakeMotor.spinFor(forward, 1000, degrees);
+  wait(4.3, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees); //550
+  wait(1.5, sec);
+  IntakeMotor.spinFor(forward, 2500, degrees); //1500
   stopDiscs();
 
-  //lift shooter
+  //raise lift
   while(!(LimitSwitchIntake.pressing())) {
     Lift.spin(forward);
   }
@@ -309,41 +306,63 @@ void auton() {
   Lift.stop(brake);
 
   //roll roller
-  turnLeftInertial(80);
+  turnLeftInertial(82);
   driveAllFor(reverse, 630);
   IntakeMotor.spin(forward);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
 
-  //pick up corner disc
-  driveAllFor(forward, 830);
+  //pick up corner disc and roll roller
+  driveAllFor(forward, 1100);
   turnRightInertial(80);
   IntakeMotor.spin(forward);
-  driveAllFor(reverse, 700);
-  IntakeMotor.stop(brake);
-
-/*
-  //roll roller
-  turnLeftInertial(80);
-  driveAllFor(reverse, 80);
-  IntakeMotor.spin(forward);
+  driveAllFor(reverse, 1420);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
 
+  //roll roller
+  IntakeMotor.spinFor(forward, 200, degrees);
+  driveAllFor(forward, 630);
+  
+  //lower lift
+  while(!(LimitSwitchFar.pressing())) {
+    Lift.spin(reverse);
+  }
+  Lift.stop(brake);
+
   //shoot 1 disc
-  driveAllFor(forward, 100);
-  IntakeMotor.spinFor(reverse, 100, degrees);
-  driveAllFor(forward, 530);
-  turnRightInertial(90);
+  turnLeftInertial(78);
+  driveAllFor(forward, 900);
   shootDiscs(8);
-  wait(3.5, sec);
-  IntakeMotor.spinFor(forward, 550, degrees);
-  */
+  wait(4.5, sec);
+  IntakeMotor.spinFor(forward, 2000, degrees); //1500
+  stopDiscs();
 
-
+  //raise lift
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.spinFor(forward, 3, degrees);
+  Lift.stop(brake);
 
   //pick up 3 discs in a row
+  turnLeftInertial(135);
+  IntakeMotor.spin(forward);
+  setDrivePercentage(15);
+  driveAllFor(reverse, 5000);
+  IntakeMotor.stop();
+
   //shoot 3 discs
+  turnRightInertial(80);
+  shootDiscs(6);
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 500, degrees);
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 500, degrees);
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 500, degrees);
+  stopDiscs();
+
   //pick up pile of discs
   //shoot all 3 discs
   //roll roller
@@ -371,6 +390,7 @@ int main() {
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print("done calibrating");
 
+  resetLiftFar();
   auton();
 
   //resetLiftFar();
