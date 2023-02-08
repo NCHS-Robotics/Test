@@ -21,6 +21,11 @@
 // Endgame              motor         20              
 // Lift                 motor         8               
 // Inertial             inertial      12              
+// LimitSwitchFar       limit         A               
+// LimitSwitchIntake    limit         B               
+// LimitSwitchRoller    limit         C               
+// LineTrackerClose     line          D               
+// LineTrackerFar       line          E               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -308,6 +313,12 @@ void auton() {
   //roll roller
   turnLeftInertial(82);
   driveAllFor(reverse, 630);
+  /*
+  while (!(LimitSwitchRoller.pressing())) {
+    driveAll(reverse);
+  }
+  stopAll(brake);
+  */
   IntakeMotor.spin(forward);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
@@ -317,6 +328,12 @@ void auton() {
   turnRightInertial(80);
   IntakeMotor.spin(forward);
   driveAllFor(reverse, 1420);
+  /*
+  while (!(LimitSwitchRoller.pressing())) {
+    driveAll(reverse);
+  }
+  stopAll(brake);
+  */
   wait(0.3, sec);
   IntakeMotor.stop(brake);
 
@@ -332,7 +349,7 @@ void auton() {
 
   //shoot 1 disc
   turnLeftInertial(78);
-  driveAllFor(forward, 900);
+  //driveAllFor(forward, 900);
   shootDiscs(8);
   wait(4.5, sec);
   IntakeMotor.spinFor(forward, 2000, degrees); //1500
@@ -390,8 +407,16 @@ int main() {
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print("done calibrating");
 
-  resetLiftFar();
-  auton();
+  while (true) {
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(LineTrackerClose.reflectivity());
+    ControllerScreen.setCursor(5,0);
+    ControllerScreen.print(LineTrackerFar.reflectivity());
+  }
+
+  //resetLiftFar();
+  //auton();
 
   //resetLiftFar();
   //resetLiftIntake();

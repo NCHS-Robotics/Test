@@ -111,8 +111,8 @@ void usercontrol(void) {
     
     //user shoot
     if (Controller1.ButtonR1.pressing()) {      
-      ShootClose.spin(forward, 7, volt);
-      ShootFar.spin(reverse, 7, volt);
+      ShootClose.spin(forward, 7, volt); //7
+      ShootFar.spin(reverse, 7, volt); //7
     }
     else {
       ShootClose.stop(brake);
