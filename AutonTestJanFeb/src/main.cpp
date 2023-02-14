@@ -101,46 +101,28 @@ void turnRight(int degrees) {
 //using inertial sensor
 void turnLeftInertial(int headingVal) {
   setDrivePercentage(20);
-  Inertial.setHeading(359.99, degrees);
+  Inertial.setHeading(355, degrees);
 
   while(Inertial.heading(degrees) >= (360 - headingVal) || (Inertial.heading(degrees) < 1)) {
-    ControllerScreen.clearScreen();
-    ControllerScreen.setCursor(0,0);
-    ControllerScreen.print(Inertial.heading(degrees));
-
     LFdrive.spin(forward);
     LBdrive.spin(forward);
     RFdrive.spin(reverse);
     RBdrive.spin(reverse);
   }
   stopAll(brake);
-  ControllerScreen.clearScreen();
-  ControllerScreen.setCursor(0,0);
-  ControllerScreen.print("done turning");
-  ControllerScreen.setCursor(5,0);
-  ControllerScreen.print(Inertial.heading(degrees));
 }
 
 void turnRightInertial(int headingVal) {
   setDrivePercentage(20);
-  Inertial.setHeading(0.1, degrees);
+  Inertial.setHeading(5, degrees);
 
   while(Inertial.heading(degrees) <= headingVal || (Inertial.heading(degrees) > 359)) {
-    ControllerScreen.clearScreen();
-    ControllerScreen.setCursor(0,0);
-    ControllerScreen.print(Inertial.heading(degrees));
-
     LFdrive.spin(reverse);
     LBdrive.spin(reverse);
     RFdrive.spin(forward);
     RBdrive.spin(forward);
   }
   stopAll(brake);
-  ControllerScreen.clearScreen();
-  ControllerScreen.setCursor(0,0);
-  ControllerScreen.print("done turning");
-  ControllerScreen.setCursor(5,0);
-  ControllerScreen.print(Inertial.heading(degrees));
 }
 
 //shoot the discs
@@ -159,8 +141,6 @@ void stopDiscs() {
   ShootClose.stop(brake);
   ShootFar.stop(brake);
 }
-
-
 
 //PI Controller to move forward and back
 void pi(int endValue) {  
@@ -234,48 +214,6 @@ void pi(int endValue) {
   stopAll(brake);
 }
 
-void testInertial() {
-  setDrivePercentage(5);
-
-  Inertial.setHeading(0.01, degrees);
-
-  ControllerScreen.clearScreen();
-  ControllerScreen.print(Inertial.heading(degrees));
-  //ControllerScreen.print(Inertial.heading(degrees) <= 90);
-
-  for (int i = 0; i < 4; i++) {
-
-    Inertial.setHeading(0, degrees);
-
-    pi(500);
-
-    while (Inertial.heading(degrees) <= 90 || Inertial.heading(degrees) > 355) {
-      ControllerScreen.clearScreen();
-      ControllerScreen.setCursor(0,0);
-      ControllerScreen.print(Inertial.heading(degrees));
-      /*
-      LFdrive.spin(forward);
-      LBdrive.spin(forward);
-      RFdrive.spin(reverse);
-      RBdrive.spin(reverse);  
-      */
-      
-      /**/
-      LFdrive.spin(reverse);
-      LBdrive.spin(reverse);
-      RFdrive.spin(forward);
-      RBdrive.spin(forward);
-    }
-    
-
-    stopAll(brake);
-    ControllerScreen.clearScreen();
-    ControllerScreen.print("Done Turning");
-    ControllerScreen.setCursor(7,0);
-    ControllerScreen.print(Inertial.heading(degrees));
-  }
-}
-
 void resetLiftFar() {
   while (!(LimitSwitchFar.pressing())) {
     Lift.spin(reverse);
@@ -313,13 +251,11 @@ void auton() {
   //roll roller
   turnLeftInertial(80);
   //driveAllFor(reverse, 630);
-  
+  IntakeMotor.spin(forward);
   while (!(BumperRoller.pressing())) {
     driveAll(reverse);
   }
-  stopAll(brake);
-  
-  IntakeMotor.spin(forward);
+  stopAll(brake);  
   wait(0.3, sec);
   IntakeMotor.stop(brake);
 
@@ -354,8 +290,8 @@ void auton() {
   stopAll(brake);
   */
 
-  turnRightInertial(1);
-  driveAllFor(forward, 200);
+  //turnRightInertial(1);
+  //driveAllFor(forward, 200);
 
   shootDiscs(8);
   wait(4.5, sec);
@@ -405,6 +341,42 @@ void auton() {
   //endgame
 }
 
+void sec15Roller() {
+  IntakeMotor.spin(forward);
+  wait(0.3, sec);
+  IntakeMotor.stop();
+  driveAllFor(forward, 400);  
+  turnLeftInertial(7);
+  while(!(LimitSwitchFar.pressing())) {
+    Lift.spin(reverse);
+  }
+  Lift.stop(brake);
+  shootDiscs(8.5);
+  wait(4.5, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
+  wait(1, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
+}
+
+void sec15Roller2() {
+  driveAllFor(forward, 300);
+  turnLeftInertial(73);
+  shootDiscs(8.5);
+  wait(4.5, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
+  wait(1, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.stop(brake);
+  turnLeftInertial(7);
+  IntakeMotor.spin(forward);
+  driveAllFor(forward, 400);
+  wait(0.3, sec);
+  IntakeMotor.stop();
+}
+
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -418,10 +390,16 @@ int main() {
   ControllerScreen.setCursor(0,0);
   ControllerScreen.print("done calibrating");  
 
-  Lift.setVelocity(75, percent);
+  Lift.setVelocity(60, percent);
+  IntakeMotor.setVelocity(100, percent);
 
-  resetLiftFar();
-  auton();
+  //resetLiftFar();
+  //sec15Roller2();
+  
+  resetLiftIntake();
+  sec15Roller();
+
+  //auton();
 
   //resetLiftFar();
   //resetLiftIntake();
