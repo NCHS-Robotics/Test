@@ -19,6 +19,8 @@ motor LFdrive = motor(PORT11, ratio6_1, false);
 motor RFdrive = motor(PORT4, ratio6_1, true);
 motor Lift = motor(PORT8, ratio18_1, false);
 inertial Inertial = inertial(PORT12);
+limit LimitSwitchFar = limit(Brain.ThreeWirePort.A);
+limit LimitSwitchIntake = limit(Brain.ThreeWirePort.B);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

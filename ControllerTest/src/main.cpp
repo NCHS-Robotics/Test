@@ -12,7 +12,9 @@
 // RFdrive              motor         4               
 // Lift                 motor         8               
 // Inertial             inertial      12              
-// ---- END VEXCODE CONFIGURED DEVICES ----         
+// LimitSwitchFar       limit         A               
+// LimitSwitchIntake    limit         B               
+// ---- END VEXCODE CONFIGURED DEVICES ----    
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -75,6 +77,7 @@ void usercontrol(void) {
   Lift.setPosition(0, degrees);
   Inertial.resetHeading();
   Inertial.resetRotation();
+  Lift.setVelocity(100, percent);
 
   // place driver control in this while loop
   while (true) {
@@ -121,24 +124,22 @@ void usercontrol(void) {
 
     //distance shoot
     if (Controller1.ButtonR2.pressing()) {
-      /*
-      ControllerScreen.clearScreen();
-      ControllerScreen.setCursor(0,0);
-      ControllerScreen.print(ShootClose.velocity(vex::velocityUnits::rpm));
-      ControllerScreen.setCursor(5,0);
-      ControllerScreen.print(ShootFar.velocity(vex::velocityUnits::rpm));
-      */
-
       ShootClose.spin(forward, 12, volt);
       ShootFar.spin(reverse, 12, volt);
     }
 
     //lift that moves shooter up and down
     if (Controller1.ButtonB.pressing()) {
-      Lift.spin(reverse, 12, volt);
+      while(!(LimitSwitchFar.pressing())) {
+        Lift.spin(reverse);
+      }
+      Lift.stop(brake);
     }
     else if (Controller1.ButtonX.pressing()) {
-      Lift.spin(forward, 12, volt);
+      while(!(LimitSwitchIntake.pressing())) {
+        Lift.spin(forward);
+      }
+      Lift.stop();
     }
     else {
       Lift.stop(brake);
@@ -155,6 +156,8 @@ void usercontrol(void) {
       ShootClose.spin(forward, -12, volt);
       ShootFar.spin(reverse, -12, volt);
     }
+
+    //
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
