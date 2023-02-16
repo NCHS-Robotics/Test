@@ -110,6 +110,7 @@ void turnLeftInertial(int headingVal) {
     RBdrive.spin(reverse);
   }
   stopAll(brake);
+  wait(0.5, sec);
 }
 
 void turnRightInertial(int headingVal) {
@@ -123,6 +124,7 @@ void turnRightInertial(int headingVal) {
     RBdrive.spin(forward);
   }
   stopAll(brake);
+  wait(0.5, sec);
 }
 
 //shoot the discs
@@ -234,7 +236,7 @@ void auton() {
   init();
 
   //shoot 2 discs
-  shootDiscs(7.8);
+  shootDiscs(8);
   wait(4.3, sec);
   IntakeMotor.spinFor(forward, 1000, degrees); //550
   wait(1.5, sec);
@@ -245,33 +247,29 @@ void auton() {
   while(!(LimitSwitchIntake.pressing())) {
     Lift.spin(forward);
   }
-  //Lift.spinFor(forward, 3, degrees);
   Lift.stop(brake);
 
   //roll roller
-  turnLeftInertial(80);
-  //driveAllFor(reverse, 630);
+  turnLeftInertial(86);
   IntakeMotor.spin(forward);
+  /*
   while (!(BumperRoller.pressing())) {
     driveAll(reverse);
   }
   stopAll(brake);  
+  */
+  driveAllFor(reverse, 630);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
 
   //pick up corner disc and roll roller
-  driveAllFor(forward, 1100);
-  turnRightInertial(80);
+  driveAllFor(forward, 1180);
+  turnRightInertial(85);
   IntakeMotor.spin(forward);
-  driveAllFor(reverse, 1420);
+  driveAllFor(reverse, 1650);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
-  driveAllFor(forward, 630);
-
-  /*
-  //roll roller
-  IntakeMotor.spinFor(forward, 200, degrees);
-  */
+  driveAllFor(forward, 500);
   
   //lower lift
   while(!(LimitSwitchFar.pressing())) {
@@ -280,26 +278,15 @@ void auton() {
   Lift.stop(brake);
 
   //shoot 1 disc
-  turnLeftInertial(80);
-  driveAllFor(forward, 910);
+  turnLeftInertial(82);
+  driveAllFor(forward, 810);
 
-  /*
-  while(LineTrackerFar.reflectivity() > 500) { //maybe 160??
-    driveAll(forward);
-  }
-  stopAll(brake);
-  */
-
-  //turnRightInertial(1);
-  //driveAllFor(forward, 200);
-
-  shootDiscs(8);
+  shootDiscs(7.7);
   wait(4.5, sec);
   IntakeMotor.spinFor(forward, 2000, degrees); //1500
   stopDiscs();
 
-  turnLeftInertial(1);
-  driveAllFor(reverse, 200);
+  turnLeftInertial(135);
 
   //raise lift
   while(!(LimitSwitchIntake.pressing())) {
@@ -307,38 +294,30 @@ void auton() {
   }
   //Lift.spinFor(forward, 3, degrees);
   Lift.stop(brake);
-
-  //pick up 3 discs in a row
-  turnLeftInertial(130);
+  
+  //pick up 3 discs in a row 
   IntakeMotor.spin(forward);
   setDrivePercentage(15);
   driveAllFor(reverse, 5000);
   IntakeMotor.stop();
+  turnRightInertial(77);
+  
+  //shoot endgame
+  ShootClose.spin(forward, -12, volt);
+  ShootFar.spin(forward, -12, volt);
+  wait(3, sec);
 
   //shoot 3 discs
-  turnRightInertial(95);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  shootDiscs(6);
+  IntakeMotor.spinFor(reverse, 450, degrees);
+  shootDiscs(6.5);
   wait(3, sec);
   IntakeMotor.spinFor(forward, 750, degrees);
+  shootDiscs(6.3);
   wait(3, sec);
-  IntakeMotor.spinFor(forward, 750, degrees);
+  IntakeMotor.spinFor(forward, 1000, degrees);
   wait(3, sec);
-  IntakeMotor.spinFor(forward, 1500, degrees);
+  IntakeMotor.spinFor(forward, 2500, degrees);
   stopDiscs();
-
-  //pick up pile of discs
-  //shoot all 3 discs
-  //roll roller
-  //pick up corner disc
-  //get roller
-  //shoot 1 disc
-  //pick up pile of discs
-  //shoot 3 discs
-  //pick up 3 discs in a line
-  //shoot 3 discs
-  //go to corner
-  //endgame
 }
 
 void sec15Roller() {
@@ -346,7 +325,7 @@ void sec15Roller() {
   wait(0.3, sec);
   IntakeMotor.stop();
   driveAllFor(forward, 400);  
-  turnLeftInertial(7);
+  turnLeftInertial(6);
   while(!(LimitSwitchFar.pressing())) {
     Lift.spin(reverse);
   }
@@ -359,20 +338,22 @@ void sec15Roller() {
 }
 
 void sec15Roller2() {
-  driveAllFor(forward, 300);
-  turnLeftInertial(73);
+  setDrivePercentage(35);
+  driveAllFor(forward, 1500);
+  turnLeftInertial(74);
   shootDiscs(8.5);
   wait(4.5, sec);
   IntakeMotor.spinFor(forward, 1000, degrees);
   wait(1, sec);
   IntakeMotor.spinFor(forward, 1000, degrees);
+  stopDiscs();
   while(!(LimitSwitchIntake.pressing())) {
     Lift.spin(forward);
   }
   Lift.stop(brake);
-  turnLeftInertial(7);
+  turnLeftInertial(6);
   IntakeMotor.spin(forward);
-  driveAllFor(forward, 400);
+  driveAllFor(reverse, 500);
   wait(0.3, sec);
   IntakeMotor.stop();
 }
@@ -381,26 +362,14 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  while(Inertial.isCalibrating()) {
-    ControllerScreen.clearScreen();
-    ControllerScreen.setCursor(0,0);
-    ControllerScreen.print("calibrating");
-  }
-  ControllerScreen.clearScreen();
-  ControllerScreen.setCursor(0,0);
-  ControllerScreen.print("done calibrating");  
-
   Lift.setVelocity(60, percent);
   IntakeMotor.setVelocity(100, percent);
 
-  //resetLiftFar();
+  resetLiftFar();
   //sec15Roller2();
-  
-  resetLiftIntake();
-  sec15Roller();
 
-  //auton();
-
-  //resetLiftFar();
   //resetLiftIntake();
+  //sec15Roller();
+
+  auton();
 }
