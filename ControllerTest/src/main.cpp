@@ -94,12 +94,13 @@ int liftArmFar() {
   return 0;
 }
 
-  int vCalc(int v) {
-      while(EncoderC.velocity(rpm) <= 2500 || v >= 12) {
-        v = v * 1.2;
-      }
-      return v;
-    }
+//calculate voltage for shooter
+int vCalc(int v) {
+  while(EncoderC.velocity(rpm) <= 2500 || v >= 12) {
+    v = v * 1.2;
+  }
+  return v;
+}
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -168,10 +169,12 @@ void usercontrol(void) {
       IntakeMotor.stop();
     }
     
+    //user shoot that prevents voltage dropoff
     int r = 2100;
     int rpmPrev = 2100;
     int temp = 2100;
-    int v = 6.25;
+    //changed v from int to double
+    double v = 6.25;
     //user shoot
     if (Controller1.ButtonR1.pressing()) {   
       temp = r;
@@ -190,8 +193,7 @@ void usercontrol(void) {
       ShootFar.stop(brake);
     }
 
-    
-
+    /*
     //lift arm intake
     if (Controller1.ButtonX.pressing()) {
       liftArmIntake();
@@ -201,20 +203,16 @@ void usercontrol(void) {
     if (Controller1.ButtonB.pressing()) {
       liftArmFar();
     }
+    */
 
-    //lift manual up
-    if (Controller1.ButtonY.pressing()) {
+    //lift manual up (rebinded to X and B until lift can move with sensors without stopping everything else)
+    if (Controller1.ButtonX.pressing()) {
       Lift.spin(forward);
-    } else if (Controller1.ButtonA.pressing()){
+    } else if (Controller1.ButtonB.pressing()){
       Lift.spin(reverse);
     } else {
       Lift.stop();
     }
-
-
-    
-
-
 
     //distance shoot
     if (Controller1.ButtonR2.pressing()) {
@@ -227,8 +225,6 @@ void usercontrol(void) {
       ShootClose.spin(forward, -12, volt);
       ShootFar.spin(reverse, -12, volt);
     }
-
-    //
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
