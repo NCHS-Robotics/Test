@@ -34,6 +34,9 @@ using namespace std;
 competition Competition;
 
 vex::controller::lcd ControllerScreen = vex::controller::lcd();
+//initialize tasks
+vex::task liftArmIntakeTask;
+vex::task liftArmFarTask;
 
 // define your global instances of motors and other devices here
 
@@ -55,6 +58,38 @@ void pre_auton(void) {
   // Example: clearing encoders, setting servo positions, ...
 }
 
+//lift arm up task
+int liftArmIntake() {
+  Brain.Screen.setCursor(1, 1);
+  Brain.Screen.print("lift intake thread");
+  if (Controller1.ButtonX.pressing()) {
+      while(!(LimitSwitchIntake.pressing())) {
+        Lift.spin(forward);
+      }
+      Lift.stop();
+    }
+  else {
+    Lift.stop();
+  }
+  return 0;
+}
+
+//lift arm down task
+int liftArmFar() {
+  Brain.Screen.setCursor(2, 1);
+  Brain.Screen.print("lift arm thread");
+  if (Controller1.ButtonB.pressing()) {
+      while(!(LimitSwitchFar.pressing())) {
+        Lift.spin(reverse);
+      }
+      Lift.stop(brake);
+    }
+  else {
+    Lift.stop();
+  }
+  return 0;
+}
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              User Control Task                            */
@@ -64,13 +99,11 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-
 void usercontrol(void) {
   // User control code here, inside the loop
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
-
   Brain.Screen.clearScreen();
   double turnImportance = 0.5;
 
@@ -79,14 +112,20 @@ void usercontrol(void) {
   Inertial.resetRotation();
   Lift.setVelocity(100, percent);
 
+  //define tasks
+  liftArmFarTask = vex::task(liftArmFar);
+  liftArmIntakeTask = vex::task(liftArmIntake);
+
   // place driver control in this while loop
   while (true) {
 
+    /*
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(1,40,"RPM:%f",ShootClose.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,80,"RPM:%f",ShootFar.velocity(vex::velocityUnits::rpm));
     Brain.Screen.printAt(1,120,"RPM:%f",IntakeMotor.velocity(vex::velocityUnits::rpm));\
     Brain.Screen.render();
+    */
     
     double turnVal = Controller1.Axis4.position(percent);
     double forwardVal = Controller1.Axis3.position(percent);
@@ -114,41 +153,32 @@ void usercontrol(void) {
     
     //user shoot
     if (Controller1.ButtonR1.pressing()) {      
-      ShootClose.spin(forward, 7, volt); //7
-      ShootFar.spin(reverse, 7, volt); //7
+      ShootClose.spin(forward, 6.25, volt); //7
+      ShootFar.spin(reverse, 6.25, volt); //7
     }
     else {
       ShootClose.stop(brake);
       ShootFar.stop(brake);
     }
 
+    /*
+
+    //lift arm intake
+    if (Controller1.ButtonX.pressing()) {
+      liftArmIntake();
+    }
+
+    //lift arm far
+    if (Controller1.ButtonB.pressing()) {
+      liftArmFar();
+    }
+
+    */
+
     //distance shoot
     if (Controller1.ButtonR2.pressing()) {
       ShootClose.spin(forward, 12, volt);
       ShootFar.spin(reverse, 12, volt);
-    }
-
-    //lift that moves shooter up and down
-    if (Controller1.ButtonB.pressing()) {
-      while(!(LimitSwitchFar.pressing())) {
-        Lift.spin(reverse);
-      }
-      Lift.stop(brake);
-    }
-    else if (Controller1.ButtonX.pressing()) {
-      while(!(LimitSwitchIntake.pressing())) {
-        Lift.spin(forward);
-      }
-      Lift.stop();
-    }
-    else {
-      Lift.stop(brake);
-    }
-
-    //testing shooter range
-    if (Controller1.ButtonLeft.pressing()) {
-      ShootClose.spin(forward, 8.5, volt);
-      ShootFar.spin(reverse, 8.5, volt);
     }
 
     //flywheel spins backwards to activate endgame
