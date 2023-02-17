@@ -365,7 +365,7 @@ int main() {
   Lift.setVelocity(60, percent);
   IntakeMotor.setVelocity(100, percent);
 
-  resetLiftFar();
+  //resetLiftFar();
   //sec15Roller2();
 
   //resetLiftIntake();
