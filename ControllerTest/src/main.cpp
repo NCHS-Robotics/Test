@@ -114,8 +114,8 @@ void usercontrol(void) {
     
     //user shoot
     if (Controller1.ButtonR1.pressing()) {      
-      ShootClose.spin(forward, 7, volt); //7
-      ShootFar.spin(reverse, 7, volt); //7
+      ShootClose.spin(forward, 6.25, volt); //7 - Changed to 5 for Daniel Pref 2/15
+      ShootFar.spin(reverse, 6.25, volt); //7 - Changed to 5 for Daniel Pref 2/15
     }
     else {
       ShootClose.stop(brake);
