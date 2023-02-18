@@ -37,6 +37,7 @@ vex::controller::lcd ControllerScreen = vex::controller::lcd();
 
 //initialize motors
 void init() {
+  Lift.setVelocity(80, percent); //60 --> 69 --> 80
   IntakeMotor.setVelocity(100, percent);
 
   ShootClose.setVelocity(100, percent);
@@ -233,12 +234,13 @@ void resetLiftIntake() {
 
 void auton() {
   
-  init();
+  //init();
 
   //shoot 2 discs
-  shootDiscs(8);
+  shootDiscs(8.45); //8 --> 8.25 --> 8.45
   wait(4.3, sec);
   IntakeMotor.spinFor(forward, 1000, degrees); //550
+  shootDiscs(8.6); //nothing --> 8.45 --> 8.6
   wait(1.5, sec);
   IntakeMotor.spinFor(forward, 2500, degrees); //1500
   stopDiscs();
@@ -250,7 +252,7 @@ void auton() {
   Lift.stop(brake);
 
   //roll roller
-  turnLeftInertial(86);
+  turnLeftInertial(83); //86 --> 83
   IntakeMotor.spin(forward);
   /*
   while (!(BumperRoller.pressing())) {
@@ -269,7 +271,7 @@ void auton() {
   driveAllFor(reverse, 1650);
   wait(0.3, sec);
   IntakeMotor.stop(brake);
-  driveAllFor(forward, 500);
+  driveAllFor(forward, 650); //500 --> 550 --> 650
   
   //lower lift
   while(!(LimitSwitchFar.pressing())) {
@@ -278,15 +280,17 @@ void auton() {
   Lift.stop(brake);
 
   //shoot 1 disc
-  turnLeftInertial(82);
-  driveAllFor(forward, 810);
+  turnLeftInertial(83); //82 --> 79 --> 82 --> 83
+  driveAllFor(forward, 910); //810 --> 910
 
-  shootDiscs(7.7);
+  IntakeMotor.spinFor(reverse, 550, degrees);
+
+  shootDiscs(8.1); //7.7 --> 7.95 --> 8.1
   wait(4.5, sec);
   IntakeMotor.spinFor(forward, 2000, degrees); //1500
   stopDiscs();
 
-  turnLeftInertial(135);
+  turnLeftInertial(135); //135 --> 132 --> 135
 
   //raise lift
   while(!(LimitSwitchIntake.pressing())) {
@@ -296,11 +300,33 @@ void auton() {
   Lift.stop(brake);
   
   //pick up 3 discs in a row 
+  /*
   IntakeMotor.spin(forward);
   setDrivePercentage(15);
   driveAllFor(reverse, 5000);
   IntakeMotor.stop();
+  
+  */
+
+  setDrivePercentage(15);
+  driveAll(reverse);
+  wait(2, sec);
+  IntakeMotor.spin(forward);
+  wait(1.5, sec);
+  IntakeMotor.stop(brake);
+  wait(0.75, sec);
+  IntakeMotor.spin(forward);
+  wait(1.25, sec);
+  IntakeMotor.stop(brake);
+  wait(0.65, sec);
+  IntakeMotor.spin(forward);
+  wait(1.5, sec);
+  IntakeMotor.stop();
+  wait(1.2, sec);
+  stopAll(brake);
+
   turnRightInertial(77);
+
   
   //shoot endgame
   ShootClose.spin(forward, -12, volt);
@@ -309,10 +335,10 @@ void auton() {
 
   //shoot 3 discs
   IntakeMotor.spinFor(reverse, 450, degrees);
-  shootDiscs(6.5);
+  shootDiscs(6.75); //6.5
   wait(3, sec);
   IntakeMotor.spinFor(forward, 750, degrees);
-  shootDiscs(6.3);
+  shootDiscs(6.55); //6.3
   wait(3, sec);
   IntakeMotor.spinFor(forward, 1000, degrees);
   wait(3, sec);
@@ -362,14 +388,17 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  Lift.setVelocity(60, percent);
+  Lift.setVelocity(80, percent); //60 --> 69 --> 80
   IntakeMotor.setVelocity(100, percent);
+  ShootClose.setVelocity(100, percent);
+  ShootFar.setVelocity(100, percent);
 
-  //resetLiftFar();
+
   //sec15Roller2();
 
   //resetLiftIntake();
   //sec15Roller();
 
+  resetLiftFar();
   auton();
 }
