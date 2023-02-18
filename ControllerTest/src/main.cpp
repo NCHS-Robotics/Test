@@ -119,10 +119,12 @@ void usercontrol(void) {
   //Brain.Screen.clearScreen();
   double turnImportance = 0.5;
 
+  //initialize sensors and motor speeds
   Lift.setPosition(0, degrees);
   Inertial.resetHeading();
   Inertial.resetRotation();
   Lift.setVelocity(100, percent);
+  IntakeMotor.setVelocity(100, percent);
 
   //define tasks
   liftArmFarTask = vex::task(liftArmFar);
@@ -211,6 +213,20 @@ void usercontrol(void) {
     } else if (Controller1.ButtonB.pressing()){
       Lift.spin(reverse);
     } else {
+      Lift.stop();
+    }
+
+    //moving the lift to the limit sensors
+    if (Controller1.ButtonX.pressing()) {
+      while(!(LimitSwitchFar.pressing())) {
+        Lift.spin(reverse);
+      }
+      Lift.stop(brake);
+    }
+    if (Controller1.ButtonA.pressing()) {
+      while(!(LimitSwitchIntake.pressing())) {
+        Lift.spin(forward);
+      }
       Lift.stop();
     }
 

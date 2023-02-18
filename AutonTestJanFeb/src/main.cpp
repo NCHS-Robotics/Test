@@ -308,6 +308,7 @@ void auton() {
   
   */
 
+  //pick up discs and align for shooting discs
   setDrivePercentage(15);
   driveAll(reverse);
   wait(2, sec);
@@ -324,8 +325,8 @@ void auton() {
   IntakeMotor.stop();
   wait(1.2, sec);
   stopAll(brake);
-
   turnRightInertial(77);
+  IntakeMotor.spinFor(reverse, 450, degrees);
 
   
   //shoot endgame
@@ -334,7 +335,6 @@ void auton() {
   wait(3, sec);
 
   //shoot 3 discs
-  IntakeMotor.spinFor(reverse, 450, degrees);
   shootDiscs(6.75); //6.5
   wait(3, sec);
   IntakeMotor.spinFor(forward, 750, degrees);
