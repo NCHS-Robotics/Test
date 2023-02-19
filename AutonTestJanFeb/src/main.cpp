@@ -1,12 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\alexa                                            */
-/*    Created:      Tue Jan 17 2023                                           */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
@@ -23,10 +14,16 @@
 // Inertial             inertial      12              
 // LimitSwitchFar       limit         A               
 // LimitSwitchIntake    limit         B               
-// LineTrackerClose     line          D               
-// LineTrackerFar       line          E               
-// BumperRoller         bumper        C               
+// ShaftEncoderFlywheel encoder       C, D            
 // ---- END VEXCODE CONFIGURED DEVICES ----
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       C:\Users\alexa                                            */
+/*    Created:      Tue Jan 17 2023                                           */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
 
 #include "vex.h"
 
@@ -35,11 +32,15 @@ using namespace vex;
 //The controller screen
 vex::controller::lcd ControllerScreen = vex::controller::lcd();
 
+//initialize shoot discs variables
+bool enableShooter;
+int r = 0;
+double v = 0.0;
+
 //initialize motors
 void init() {
-  Lift.setVelocity(80, percent); //60 --> 69 --> 80
+  Lift.setVelocity(100, percent); //60 --> 69 --> 80 -->
   IntakeMotor.setVelocity(100, percent);
-
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 }
@@ -139,10 +140,42 @@ void shootDiscsFor(int deg) {
   ShootFar.spinFor(forward, deg, degrees);
 }
 
+//stop the flywheel
 void stopDiscs() {
   IntakeMotor.stop(brake);
   ShootClose.stop(brake);
   ShootFar.stop(brake);
+  enableShooter = false;
+}
+
+//calculate voltage for shooter
+int vCalc(int v) {
+  while(ShaftEncoderFlywheel.velocity(rpm) <= 2500 || v >= 12) {
+    v = v * 1.2;
+  }
+  return v;
+}
+
+//shooting that prevents voltage dropoff
+int shootDiscs2() {
+    int rpmPrev = r + 100;
+    int temp = r + 100;
+    double vTemp;
+    while (true) {   
+      temp = r;
+      r = ShaftEncoderFlywheel.velocity(rpm);
+      rpmPrev = temp;
+      if(rpmPrev - r >= 100) {
+        vTemp = v;
+        //v = v * 1.15;
+        v = 10;
+      }
+      ShootClose.spin(forward, v, volt); 
+      ShootFar.spin(forward, v, volt); 
+      v = vTemp;
+    }
+
+    return 0;
 }
 
 //PI Controller to move forward and back
@@ -217,6 +250,7 @@ void pi(int endValue) {
   stopAll(brake);
 }
 
+//reset the lift for shooting far
 void resetLiftFar() {
   while (!(LimitSwitchFar.pressing())) {
     Lift.spin(reverse);
@@ -224,6 +258,7 @@ void resetLiftFar() {
   Lift.stop(brake);
 }
 
+//reset the lift for the intake
 void resetLiftIntake() {
   while(!(LimitSwitchIntake.pressing())) {
     Lift.spin(forward);
@@ -234,6 +269,135 @@ void resetLiftIntake() {
 
 void auton() {
   
+  /*
+  //init();
+
+  task shooterTask = task(shootDiscs2);
+  shooterTask.suspend();
+
+  //shoot 2 discs
+  shootDiscs(8.45); //8 --> 8.25 --> 8.45
+  wait(4.3, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees); //550
+  shootDiscs(8.6); //nothing --> 8.45 --> 8.6
+  wait(1.5, sec);
+  IntakeMotor.spinFor(forward, 2500, degrees); //1500
+  stopDiscs();
+  
+  //shootDiscs2(2850, 8.35, 2005);
+  r = 2800; //2850 --> 2800
+  v = 8.35; //8.35 --> 10.35 --> 8.35
+  wait(4.5, sec);
+  IntakeMotor.spin(forward); //550 --> waiting on time
+  //shootDiscs(8.6); //nothing --> 8.45 --> 8.6
+  wait(1.3, sec);
+  IntakeMotor.stop(brake);
+  wait(1, sec);
+  IntakeMotor.spin(forward);
+  wait(1.2, sec);
+  IntakeMotor.stop();
+  stopDiscs();
+  shooterTask.suspend();
+  
+  
+  //raise lift
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.stop(brake);
+
+  //roll roller
+  turnLeftInertial(83); //86 --> 83
+  IntakeMotor.spin(forward);
+  
+  while (!(BumperRoller.pressing())) {
+    driveAll(reverse);
+  }
+  stopAll(brake);  
+  
+  driveAllFor(reverse, 630);
+  wait(0.3, sec);
+  IntakeMotor.stop(brake);
+
+  //pick up corner disc and roll roller
+  driveAllFor(forward, 1180);
+  turnRightInertial(85);
+  IntakeMotor.spin(forward);
+  driveAllFor(reverse, 1650);
+  wait(0.3, sec);
+  IntakeMotor.stop(brake);
+  driveAllFor(forward, 650); //500 --> 550 --> 650
+  
+  //lower lift
+  while(!(LimitSwitchFar.pressing())) {
+    Lift.spin(reverse);
+  }
+  Lift.stop(brake);
+
+  //shoot 1 disc
+  turnLeftInertial(83); //82 --> 79 --> 82 --> 83
+  driveAllFor(forward, 910); //810 --> 910
+
+  IntakeMotor.spinFor(reverse, 550, degrees);
+
+  shootDiscs(8.1); //7.7 --> 7.95 --> 8.1
+  wait(4.5, sec);
+  IntakeMotor.spinFor(forward, 2000, degrees); //1500
+  stopDiscs();
+
+  turnLeftInertial(135); //135 --> 132 --> 135
+
+  //raise lift
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  //Lift.spinFor(forward, 3, degrees);
+  Lift.stop(brake);
+
+  //pick up discs and align for shooting discs
+  setDrivePercentage(15);
+  driveAll(reverse);
+  wait(2, sec);
+  IntakeMotor.spin(forward);
+  wait(1.5, sec);
+  IntakeMotor.stop(brake);
+  wait(0.75, sec);
+  IntakeMotor.spin(forward);
+  wait(1.25, sec);
+  IntakeMotor.stop(brake);
+  wait(0.65, sec);
+  IntakeMotor.spin(forward);
+  wait(1.7, sec);
+  IntakeMotor.stop();
+  wait(0.9, sec);
+  stopAll(brake);
+  turnRightInertial(77);
+  IntakeMotor.spinFor(reverse, 450, degrees);
+  
+  //shoot endgame
+  ShootClose.spin(forward, -12, volt);
+  ShootFar.spin(forward, -12, volt);
+  wait(3, sec);
+
+  //shoot 3 discs
+  
+  shootDiscs(6.75); //6.5
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 750, degrees);
+  shootDiscs(6.55); //6.3
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 1000, degrees);
+  wait(3, sec);
+  IntakeMotor.spinFor(forward, 2500, degrees);
+  stopDiscs();
+  
+
+  r = 2050; //2250 --> 2050
+  v = 6.75; 
+  shooterTask.resume();
+  wait(3, sec);
+  IntakeMotor.spin(forward);  
+  */
   //init();
 
   //shoot 2 discs
@@ -384,14 +548,26 @@ void sec15Roller2() {
   IntakeMotor.stop();
 }
 
+int printRPM() {
+  while (true) {
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(ShaftEncoderFlywheel.velocity(rpm));
+  }
+  
+  return 0;
+}
+
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  Lift.setVelocity(80, percent); //60 --> 69 --> 80
+  Lift.setVelocity(100, percent); //60 --> 69 --> 80 --> 100
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
+
+  //task shooterTask = task(shootDiscs2);
 
 
   //sec15Roller2();
@@ -399,6 +575,11 @@ int main() {
   //resetLiftIntake();
   //sec15Roller();
 
-  resetLiftFar();
+  //resetLiftFar();
+  //auton();
+
+  //task autonTask = task(auton);
+  //resetLiftFar();
+  //task rpmTask = task(printRPM);
   auton();
 }

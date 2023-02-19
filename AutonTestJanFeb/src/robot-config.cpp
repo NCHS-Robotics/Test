@@ -21,9 +21,7 @@ motor Lift = motor(PORT8, ratio18_1, false);
 inertial Inertial = inertial(PORT12);
 limit LimitSwitchFar = limit(Brain.ThreeWirePort.A);
 limit LimitSwitchIntake = limit(Brain.ThreeWirePort.B);
-line LineTrackerClose = line(Brain.ThreeWirePort.D);
-line LineTrackerFar = line(Brain.ThreeWirePort.E);
-bumper BumperRoller = bumper(Brain.ThreeWirePort.C);
+encoder ShaftEncoderFlywheel = encoder(Brain.ThreeWirePort.C);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

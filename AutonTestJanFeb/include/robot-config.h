@@ -16,9 +16,7 @@ extern motor Lift;
 extern inertial Inertial;
 extern limit LimitSwitchFar;
 extern limit LimitSwitchIntake;
-extern line LineTrackerClose;
-extern line LineTrackerFar;
-extern bumper BumperRoller;
+extern encoder ShaftEncoderFlywheel;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
