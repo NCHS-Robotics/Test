@@ -26,6 +26,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <sstream>
 
 using namespace vex;
 
@@ -146,34 +147,40 @@ void turnRightInertial(int headingVal) {
 
 //PID turning
 void pidLeft(int target) {
-  double kP = 2;
-  double kI = 0.05;
-  double kD = .02;
+  double kP = .02;
+  double kI = .002;
+  double kD = .09;
+  //int maxSpeed = 12; //12 for volts | 100 for percent
+  //target = 360 - target;
+  double speed;
 
   int error = 0;
   int prevError = 0;
   int derivative = 0;
   int totalError = 0;
 
-  Inertial.setHeading(355, degrees);
+  Inertial.setHeading(359, degrees);
 
   while (Inertial.heading(degrees) >= (360 - target)) {
 
     ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
     ControllerScreen.print(Inertial.heading(degrees));
+    ControllerScreen.setCursor(2,0);
+    ControllerScreen.print(speed);
 
     prevError = error; 
     error = Inertial.heading(degrees) - target;
     derivative = error - prevError;
     totalError += error;
 
-    double volts = (error * kP) + (totalError * kI) + (derivative * kD);
+    speed = (error * kP) + (totalError * kI) + (derivative * kD);
 
-    turnLeft(volts);
+    turnLeft(speed);
 
     wait(20, msec);
   }
+  stopAll(brake);
   ControllerScreen.clearScreen();
   ControllerScreen.setCursor(0,0);
   ControllerScreen.print(Inertial.heading(degrees));
@@ -492,10 +499,14 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
+  while(Inertial.isCalibrating()) {
+    ControllerScreen.print("calibrating");
+  }
+
   Lift.setVelocity(100, percent); //60 --> 69 --> 80 --> 100
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
 
-  pidLeft(90);
+  pidLeft(80);
 }

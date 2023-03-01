@@ -22,9 +22,10 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
+  Lift.setVelocity(100, percent);
+
   while(!(LimitSwitchIntake.pressing())) {
     Lift.spin(forward);  
   }
-  Lift.spinFor(reverse, 15, degrees);
-  Lift.stop();  
+  Lift.stop(hold);  
 }

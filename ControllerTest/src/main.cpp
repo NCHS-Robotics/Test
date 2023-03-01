@@ -65,15 +65,11 @@ void pre_auton(void) {
 int liftArmIntake() {
   Brain.Screen.setCursor(1, 1);
   Brain.Screen.print("lift intake thread");
-  if (Controller1.ButtonX.pressing()) {
-      while(!(LimitSwitchIntake.pressing())) {
-        Lift.spin(forward);
-      }
-      Lift.stop();
-    }
-  else {
-    Lift.stop();
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
   }
+  Lift.stop(hold);
+  
   return 0;
 }
 
@@ -82,15 +78,11 @@ int liftArmIntake() {
 int liftArmFar() {
   Brain.Screen.setCursor(2, 1);
   Brain.Screen.print("lift arm thread");
-  if (Controller1.ButtonB.pressing()) {
-      while(!(LimitSwitchFar.pressing())) {
-        Lift.spin(reverse);
-      }
-      Lift.stop(brake);
-    }
-  else {
-    Lift.stop();
+  while(!(LimitSwitchFar.pressing())) {
+    Lift.spin(reverse);
   }
+  Lift.stop(hold);
+
   return 0;
 }
 
@@ -128,7 +120,9 @@ void usercontrol(void) {
 
   //define tasks
   liftArmFarTask = vex::task(liftArmFar);
+  liftArmFarTask.suspend();
   liftArmIntakeTask = vex::task(liftArmIntake);
+  liftArmIntakeTask.suspend();
 
  
   // place driver control in this while loop
@@ -158,25 +152,26 @@ void usercontrol(void) {
     RFdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RBdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
 
-    //double suckVal = Controller1.ButtonL1.pressing();
-    //double suckVolts = suckVal * 0.12;
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Inertial.heading(degrees));
     
     if (Controller1.ButtonL2.pressing()){ //in
-      IntakeMotor.spin(forward, -12.0 , voltageUnits::volt);
+      IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
     }
     else if (Controller1.ButtonL1.pressing()){ //out
-      IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
+      IntakeMotor.spin(forward, -12.0 , voltageUnits::volt);
     }
     else{
       IntakeMotor.stop();
     }
     
     //user shoot that prevents voltage dropoff
-    int r = 2100;
-    int rpmPrev = 2100;
-    int temp = 2100;
+    int r = 1800; //2100 --> 1800
+    int rpmPrev = 1800;
+    int temp = 1800;
     //changed v from int to double
-    double v = 6.25;
+    double v = 6.25; //6.25 --> 5.25
     //user shoot
     if (Controller1.ButtonR1.pressing()) {   
       temp = r;
@@ -195,40 +190,31 @@ void usercontrol(void) {
       ShootFar.stop(brake);
     }
 
-    /*
-    //lift arm intake
-    if (Controller1.ButtonX.pressing()) {
-      liftArmIntake();
-    }
-
-    //lift arm far
+    //moving the lift 
+    //far
     if (Controller1.ButtonB.pressing()) {
-      liftArmFar();
-    }
-    */
-
-    //lift manual up (rebinded to X and B until lift can move with sensors without stopping everything else)
-    if (Controller1.ButtonX.pressing()) {
-      Lift.spin(forward);
-    } else if (Controller1.ButtonB.pressing()){
       Lift.spin(reverse);
-    } else {
-      Lift.stop();
-    }
-
-    //moving the lift to the limit sensors
-    if (Controller1.ButtonX.pressing()) {
-      while(!(LimitSwitchFar.pressing())) {
-        Lift.spin(reverse);
+    } 
+    else if (Controller1.ButtonY.pressing()) {
+      liftArmFarTask.resume();
+      if (liftArmFar() == 0) {
+        liftArmFarTask.suspend();
       }
-      Lift.stop(brake);
     }
-    if (Controller1.ButtonA.pressing()) {
-      while(!(LimitSwitchIntake.pressing())) {
-        Lift.spin(forward);
+    //intake
+    else if (Controller1.ButtonB.pressing()){
+      Lift.spin(forward);
+    } 
+    else if (Controller1.ButtonX.pressing()) {
+      liftArmIntakeTask.resume();
+      if (liftArmIntake() == 0) {
+        liftArmIntakeTask.suspend();
       }
-      Lift.stop();
     }
+    else {
+      Lift.stop(hold);
+    }
+    
 
     //distance shoot
     if (Controller1.ButtonR2.pressing()) {
