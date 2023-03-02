@@ -153,7 +153,7 @@ void pidLeft(int target) {
   //int maxSpeed = 12; //12 for volts | 100 for percent
   //target = 360 - target;
   double speed;
-  int countCheck = 0;
+  //int countCheck = 0;
 
   int error = 0;
   int prevError = 0;
@@ -381,15 +381,15 @@ void auton() {
   //roll roller
   turnLeftInertial(83); 
   IntakeMotor.spin(forward);
+
   liftIntakeTask.suspend();
+
   driveAll(reverse);
   wait(1, sec);
   IntakeMotor.stop(brake);
-  driveAllFor(forward, 630);
-
-  //liftIntakeTask.suspend();
+  //driveAllFor(forward, 630);
   
-  /*
+  /**/
   //pick up corner disc and roll roller
   driveAllFor(forward, 1180);
   turnRightInertial(85);
@@ -417,6 +417,7 @@ void auton() {
 
   liftIntakeTask.resume();
 
+  /*
   turnLeftInertial(135); 
 
   //pick up discs and align for shooting discs
