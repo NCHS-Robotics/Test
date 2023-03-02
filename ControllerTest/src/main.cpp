@@ -151,9 +151,10 @@ void usercontrol(void) {
     RFdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
     RBdrive.spin(forward, forwardVolts - turnVolts, voltageUnits::volt);
 
-    ControllerScreen.clearScreen();
+    //ControllerScreen.clearScreen();
     ControllerScreen.setCursor(0,0);
-    ControllerScreen.print(Inertial.heading(degrees));
+    //ControllerScreen.print(Inertial.heading(degrees));
+    
     
     if (Controller1.ButtonL2.pressing()){ //in
       IntakeMotor.spin(forward, 12.0 , voltageUnits::volt);
