@@ -74,7 +74,6 @@ int liftArmIntake() {
 }
 
 //lift arm down task
-
 int liftArmFar() {
   Brain.Screen.setCursor(2, 1);
   Brain.Screen.print("lift arm thread");
@@ -202,10 +201,10 @@ void usercontrol(void) {
       }
     }
     //intake
-    else if (Controller1.ButtonB.pressing()){
+    else if (Controller1.ButtonX.pressing()){
       Lift.spin(forward);
     } 
-    else if (Controller1.ButtonX.pressing()) {
+    else if (Controller1.ButtonA.pressing()) {
       liftArmIntakeTask.resume();
       if (liftArmIntake() == 0) {
         liftArmIntakeTask.suspend();
