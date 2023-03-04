@@ -11,6 +11,24 @@
 // Controller1          controller                    
 // Endgame              motor         20              
 // Lift                 motor         8               
+// Inertial             inertial      10              
+// LimitSwitchFar       limit         A               
+// LimitSwitchIntake    limit         B               
+// ShaftEncoderFlywheel encoder       C, D            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// LBdrive              motor         1               
+// LFdrive              motor         11              
+// RBdrive              motor         2               
+// RFdrive              motor         4               
+// IntakeMotor          motor         5               
+// ShootClose           motor         6               
+// ShootFar             motor         7               
+// Controller1          controller                    
+// Endgame              motor         20              
+// Lift                 motor         8               
 // Inertial             inertial      12              
 // LimitSwitchFar       limit         A               
 // LimitSwitchIntake    limit         B               
@@ -148,8 +166,8 @@ void turnRightInertial(int headingVal) {
 //PID turning
 void pidLeft(int target) {
   double kP = .02;
-  double kI = .0021;
-  double kD = .05;
+  double kI = .005;
+  double kD = .0005;
   //int maxSpeed = 12; //12 for volts | 100 for percent
   //target = 360 - target;
   double speed;
@@ -176,7 +194,7 @@ void pidLeft(int target) {
     derivative = error - prevError;
     totalError += error;
 
-    speed = (error * kP) + (totalError * kI) + (derivative * kD);
+    speed = (error * kP) + (totalError * kI);// + (derivative * kD);
 
     turnLeft(speed);
 
@@ -191,28 +209,47 @@ void pidLeft(int target) {
 }
 
 void pidRight(int target) {
-  double kP = 0.02;
-  double kI = 0.005;
-  double kD = 0.0005;
+  double kP = .02;
+  double kI = .005;
+  double kD = .0005;
+  //int maxSpeed = 12; //12 for volts | 100 for percent
+  //target = 360 - target;
+  double speed;
+  //int countCheck = 0;
 
   int error = 0;
   int prevError = 0;
   int derivative = 0;
   int totalError = 0;
 
-  Inertial.setHeading(5, degrees);
+  Inertial.setHeading(1, degrees);
+  int checkVal = target;
 
-  while (Inertial.heading(degrees) <= target || (Inertial.heading(degrees) > 359)) {
+  while (Inertial.heading(degrees) <= (target)) {
+
+    ControllerScreen.clearScreen();
+    ControllerScreen.setCursor(0,0);
+    ControllerScreen.print(Inertial.heading(degrees));
+    ControllerScreen.setCursor(2,0);
+    ControllerScreen.print(speed);
 
     prevError = error; 
     error = Inertial.heading(degrees) - target;
     derivative = error - prevError;
     totalError += error;
 
-    double volts = (error * kP) + (totalError * kI) + (derivative * kD);
+    speed = (error * kP) + (totalError * kI);// + (derivative * kD);
 
-    turnRight(volts);
+    turnRight(speed);
+
+    wait(20, msec);
   }
+  stopAll(brake);
+  ControllerScreen.clearScreen();
+  ControllerScreen.setCursor(0,0);
+  ControllerScreen.print(Inertial.heading(degrees));
+  ControllerScreen.setCursor(2,0);
+  ControllerScreen.print(checkVal);
 }
 
 //shoot the discs
@@ -369,9 +406,6 @@ void auton() {
   IntakeMotor.spinFor(reverse, 500, degrees); 
   wait(1, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
-  //shootDiscs(8.6);
-  //wait(1.5, sec);
-  //IntakeMotor.spinFor(reverse, 2500, degrees);
   stopDiscs();
 
   
@@ -379,7 +413,8 @@ void auton() {
   liftIntakeTask.resume();
 
   //roll roller
-  turnLeftInertial(83); 
+  //turnLeftInertial(83); 
+  pidLeft(80);
   IntakeMotor.spin(forward);
 
   liftIntakeTask.suspend();
@@ -387,9 +422,9 @@ void auton() {
   driveAll(reverse);
   wait(1, sec);
   IntakeMotor.stop(brake);
-  //driveAllFor(forward, 630);
+  driveAllFor(forward, 630);
   
-  /**/
+  /*
   //pick up corner disc and roll roller
   driveAllFor(forward, 1180);
   turnRightInertial(85);
@@ -417,7 +452,7 @@ void auton() {
 
   liftIntakeTask.resume();
 
-  /*
+  
   turnLeftInertial(135); 
 
   //pick up discs and align for shooting discs
@@ -458,27 +493,51 @@ void auton() {
   wait(3, sec);
   IntakeMotor.spinFor(forward, 2500, degrees);
   stopDiscs();
-}
-
-void sec15Roller() {
-  IntakeMotor.spin(forward);
-  wait(0.3, sec);
-  IntakeMotor.stop();
-  driveAllFor(forward, 400);  
-  turnLeftInertial(6);
-  while(!(LimitSwitchFar.pressing())) {
-    Lift.spin(reverse);
-  }
-  Lift.stop(brake);
-  shootDiscs(8.5);
-  wait(4.5, sec);
-  IntakeMotor.spinFor(forward, 1000, degrees);
-  wait(1, sec);
-  IntakeMotor.spinFor(forward, 1000, degrees);
   */
 }
 
-void sec15Roller2() {
+void sec15Roller() {
+  task liftFarTask = task(resetLiftFar);
+  liftFarTask.suspend();
+  task liftIntakeTask = task(resetLiftIntake);
+  liftIntakeTask.suspend();
+
+  shootDiscs(12);
+  wait(4, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  wait(1, sec);
+  IntakeMotor.spinFor(reverse, 900, degrees);
+  stopDiscs();
+
+  liftIntakeTask.resume();
+  turnRightInertial(8);
+  IntakeMotor.spin(forward);
+  driveAll(reverse);
+  wait(1.1, sec);
+  IntakeMotor.stop(brake);
+  stopAll(brake);
+
+  driveAllFor(forward, 600);
+  pidLeft(67);
+  IntakeMotor.spin(reverse);
+  driveAllFor(reverse, 2500);
+
+  liftIntakeTask.suspend();
+  liftFarTask.resume();
+  pidLeft(250);
+  IntakeMotor.spinFor(reverse, 400, degrees);
+  shootDiscs(12);
+  wait(4, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  wait(1.5, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  wait(1.5, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  liftFarTask.suspend();
+  liftIntakeTask.resume();
+}
+
+void sec15Far() {
   setDrivePercentage(35);
   driveAllFor(forward, 1500);
   turnLeftInertial(74);
@@ -522,7 +581,9 @@ int main() {
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
+  setDrivePercentage(60);
 
-  //pidLeft(80); //90 degreess
-  auton();
+  //pidLeft(70); //90 degreess
+  //auton();
+  sec15Roller();
 }
