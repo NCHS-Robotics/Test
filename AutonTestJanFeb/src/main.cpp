@@ -301,6 +301,11 @@ int shootDiscs2() {
     return 0;
 }
 
+void turnR(int target) {
+  bool i = Inertial.heading(degrees);
+
+
+}
 //PI Controller to move forward and back
 void pi(int endValue) {  
   bool enableDrivePID = true;
@@ -502,26 +507,56 @@ void sec15Roller() {
   task liftIntakeTask = task(resetLiftIntake);
   liftIntakeTask.suspend();
 
+  
+  ControllerScreen.print("shooting");
   shootDiscs(12);
-  wait(4, sec);
+  wait(5, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
-  wait(1, sec);
-  IntakeMotor.spinFor(reverse, 900, degrees);
+  wait(1.5, sec);
+  IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 
+  ControllerScreen.setCursor(1,0);
+  ControllerScreen.print("roller-movingback");
   liftIntakeTask.resume();
+  
   turnRightInertial(8);
   IntakeMotor.spin(forward);
-  driveAll(reverse);
-  wait(1.1, sec);
+  driveAll(reverse); //changed
+  wait(1.3, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
 
+  ControllerScreen.clearScreen();
+  ControllerScreen.setCursor(1,0);
+  ControllerScreen.print("roller-done");
   driveAllFor(forward, 600);
-  pidLeft(67);
-  IntakeMotor.spin(reverse);
-  driveAllFor(reverse, 2500);
+  //pidLeft(79.5);
+  turnLeftInertial(120);
 
+  IntakeMotor.spin(reverse);
+  wait(0.5, sec);
+  setDrivePercentage(60);
+  driveAllFor(reverse, 3500);
+  wait(.25, sec);
+  
+  
+ 
+  IntakeMotor.stop(brake);
+
+  
+  turnRightInertial(90);
+
+  IntakeMotor.spinFor(forward, 100, degrees);
+  resetLiftFar();
+  shootDiscs(12);
+  wait(5, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  wait(1.5, sec);
+  IntakeMotor.spinFor(reverse, 950, degrees);
+  stopDiscs();
+
+  /**
   liftIntakeTask.suspend();
   liftFarTask.resume();
   pidLeft(250);
@@ -534,7 +569,8 @@ void sec15Roller() {
   wait(1.5, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
   liftFarTask.suspend();
-  liftIntakeTask.resume();
+  liftIntakeTask.resume(); 
+  **/
 }
 
 void sec15Far() {
@@ -575,8 +611,10 @@ int main() {
   while(Inertial.isCalibrating()) {
     ControllerScreen.print("calibrating");
   }
+  ControllerScreen.clearScreen();
+  ControllerScreen.setCursor(0,0);
   wait(1, sec);
-
+  
   Lift.setVelocity(100, percent); //60 --> 69 --> 80 --> 100
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
@@ -586,4 +624,6 @@ int main() {
   //pidLeft(70); //90 degreess
   //auton();
   sec15Roller();
+  //turnLeftInertial(90);
+  
 }
