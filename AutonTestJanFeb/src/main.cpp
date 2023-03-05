@@ -510,7 +510,14 @@ void sec15Roller() {
   
   ControllerScreen.print("shooting");
   shootDiscs(12);
-  wait(5, sec);
+  setDrivePercentage(35);
+  driveAll(forward);
+  wait(.35, sec);
+  stopAll(brake);
+  wait(0.15,sec);
+  setDrivePercentage(60);
+  turnLeftInertial(9);
+  wait(4.5, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
   wait(1.5, sec);
   IntakeMotor.spinFor(reverse, 950, degrees);
@@ -520,10 +527,10 @@ void sec15Roller() {
   ControllerScreen.print("roller-movingback");
   liftIntakeTask.resume();
   
-  turnRightInertial(8);
+  turnRightInertial(9);
   IntakeMotor.spin(forward);
   driveAll(reverse); //changed
-  wait(1.3, sec);
+  wait(1.4, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
 
@@ -532,7 +539,7 @@ void sec15Roller() {
   ControllerScreen.print("roller-done");
   driveAllFor(forward, 600);
   //pidLeft(79.5);
-  turnLeftInertial(120);
+  turnLeftInertial(130);
 
   IntakeMotor.spin(reverse);
   wait(0.5, sec);
@@ -545,14 +552,14 @@ void sec15Roller() {
   IntakeMotor.stop(brake);
 
   
-  turnRightInertial(90);
+  turnRightInertial(91);
 
   IntakeMotor.spinFor(forward, 100, degrees);
   resetLiftFar();
   shootDiscs(12);
-  wait(5, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  wait(1.5, sec);
+  wait(3.5, sec);
+  IntakeMotor.spinFor(reverse, 550, degrees);
+  wait(0.75, sec);
   IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 

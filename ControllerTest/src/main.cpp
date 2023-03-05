@@ -167,22 +167,23 @@ void usercontrol(void) {
     }
     
     //user shoot that prevents voltage dropoff
-    int r = 1800; //2100 --> 1800
+    int r = 1800; //2100 --> 1800 --> 500 (target rpm)
     int rpmPrev = 1800;
     int temp = 1800;
     //changed v from int to double
-    double v = 6.25; //6.25 --> 5.25
+    double v = 7.25; //6.25 --> 5.25
     //user shoot
     if (Controller1.ButtonR1.pressing()) {   
       temp = r;
       r = EncoderC.velocity(rpm);
       rpmPrev = temp;
-      if(rpmPrev - r >= 100) {
-        v = 10;
+      if(rpmPrev - r >= 70) {
+        v = 12;
+        
       }
-      ShootClose.spin(forward, v, volt); //7
-      ShootFar.spin(reverse, v, volt); //7
-      v = 6.25;
+      ShootClose.spin(forward, 12, volt); //7
+      ShootFar.spin(reverse, 12, volt); //7
+      v = v >= 7.25 ? v * .9 : 7.25;
       
     }
     else {
