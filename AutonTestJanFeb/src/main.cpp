@@ -412,7 +412,7 @@ void skillsAuton() {
   stopAll(brake);
 
   //pick up corner disc and roll second roller
-  driveAllFor(forward, 1200);
+  driveAllFor(forward, 1250);
   turnRightInertial(90);
   IntakeMotor.spin(reverse);
   driveAll(reverse);
@@ -423,21 +423,21 @@ void skillsAuton() {
   //shoot all 3 discs
   driveAllFor(forward, 650);
   liftFarTask.resume();
-  turnLeftInertial(81);
+  turnLeftInertial(83);
   IntakeMotor.spinFor(forward, 100, degrees);
   driveAll(forward);
-  wait(1.4, sec);
+  wait(1.7, sec);
   Lift.spin(forward);
   wait(0.1, sec);
   Lift.stop(hold);
   stopAll(brake);
 
   shootDiscs(12);
-  wait(4, sec);
+  wait(2.4, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
-  wait(.2, sec);
+ 
   IntakeMotor.spinFor(reverse, 650, degrees);
-  wait(.2, sec);
+  
   IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 
