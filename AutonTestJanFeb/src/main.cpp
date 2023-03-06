@@ -136,7 +136,6 @@ void turnRightFor(int degrees) {
 
 //using inertial sensor
 void turnLeftInertial(int headingVal) {
-  setDrivePercentage(20);
   Inertial.setHeading(355, degrees);
 
   while(Inertial.heading(degrees) >= (360 - headingVal) || (Inertial.heading(degrees) < 1)) {
@@ -150,7 +149,6 @@ void turnLeftInertial(int headingVal) {
 }
 
 void turnRightInertial(int headingVal) {
-  setDrivePercentage(20);
   Inertial.setHeading(5, degrees);
 
   while(Inertial.heading(degrees) <= headingVal || (Inertial.heading(degrees) > 359)) {
@@ -510,14 +508,14 @@ void sec15Roller() {
   
   ControllerScreen.print("shooting");
   shootDiscs(12);
-  setDrivePercentage(35);
   driveAll(forward);
   wait(.35, sec);
   stopAll(brake);
   wait(0.15,sec);
-  setDrivePercentage(60);
+
+
   turnLeftInertial(9);
-  wait(4.5, sec);
+  wait(3.5, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
   wait(1.5, sec);
   IntakeMotor.spinFor(reverse, 950, degrees);
@@ -530,38 +528,38 @@ void sec15Roller() {
   turnRightInertial(9);
   IntakeMotor.spin(forward);
   driveAll(reverse); //changed
-  wait(1.4, sec);
+  wait(0.75, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
 
   ControllerScreen.clearScreen();
   ControllerScreen.setCursor(1,0);
   ControllerScreen.print("roller-done");
-  driveAllFor(forward, 600);
+  driveAllFor(forward, 525);
   //pidLeft(79.5);
   turnLeftInertial(130);
 
   IntakeMotor.spin(reverse);
   wait(0.5, sec);
-  setDrivePercentage(60);
-  driveAllFor(reverse, 3500);
+
+  driveAllFor(reverse, 3000);
   wait(.25, sec);
-  
-  
- 
+   
   IntakeMotor.stop(brake);
-
   
-  turnRightInertial(91);
+  turnRightInertial(100);
 
-  IntakeMotor.spinFor(forward, 100, degrees);
+  IntakeMotor.spinFor(forward, 200, degrees);
   resetLiftFar();
   shootDiscs(12);
   wait(3.5, sec);
-  IntakeMotor.spinFor(reverse, 550, degrees);
+  IntakeMotor.spinFor(reverse, 475, degrees);
   wait(0.75, sec);
-  IntakeMotor.spinFor(reverse, 950, degrees);
+  IntakeMotor.spinFor(reverse, 650, degrees);
+  wait(0.75, sec);
+  IntakeMotor.spinFor(reverse, 900, degrees);
   stopDiscs();
+  
 
   /**
   liftIntakeTask.suspend();
@@ -626,7 +624,7 @@ int main() {
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
-  setDrivePercentage(60);
+  setDrivePercentage(35);
 
   //pidLeft(70); //90 degreess
   //auton();
