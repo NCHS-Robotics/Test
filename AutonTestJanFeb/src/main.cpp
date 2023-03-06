@@ -504,8 +504,7 @@ void sec15Roller() {
   liftFarTask.suspend();
   task liftIntakeTask = task(resetLiftIntake);
   liftIntakeTask.suspend();
-
-  
+    
   ControllerScreen.print("shooting");
   shootDiscs(12);
   driveAll(forward);
@@ -528,7 +527,7 @@ void sec15Roller() {
   turnRightInertial(9);
   IntakeMotor.spin(forward);
   driveAll(reverse); //changed
-  wait(0.75, sec);
+  wait(1.25, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
 
@@ -548,34 +547,6 @@ void sec15Roller() {
   IntakeMotor.stop(brake);
   
   turnRightInertial(100);
-
-  IntakeMotor.spinFor(forward, 200, degrees);
-  resetLiftFar();
-  shootDiscs(12);
-  wait(3.5, sec);
-  IntakeMotor.spinFor(reverse, 475, degrees);
-  wait(0.75, sec);
-  IntakeMotor.spinFor(reverse, 650, degrees);
-  wait(0.75, sec);
-  IntakeMotor.spinFor(reverse, 900, degrees);
-  stopDiscs();
-  
-
-  /**
-  liftIntakeTask.suspend();
-  liftFarTask.resume();
-  pidLeft(250);
-  IntakeMotor.spinFor(reverse, 400, degrees);
-  shootDiscs(12);
-  wait(4, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  wait(1.5, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  wait(1.5, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  liftFarTask.suspend();
-  liftIntakeTask.resume(); 
-  **/
 }
 
 void sec15Far() {
