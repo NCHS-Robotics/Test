@@ -16,24 +16,6 @@
 // LimitSwitchIntake    limit         B               
 // ShaftEncoderFlywheel encoder       C, D            
 // ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// LBdrive              motor         1               
-// LFdrive              motor         11              
-// RBdrive              motor         2               
-// RFdrive              motor         4               
-// IntakeMotor          motor         5               
-// ShootClose           motor         6               
-// ShootFar             motor         7               
-// Controller1          controller                    
-// Endgame              motor         20              
-// Lift                 motor         8               
-// Inertial             inertial      12              
-// LimitSwitchFar       limit         A               
-// LimitSwitchIntake    limit         B               
-// ShaftEncoderFlywheel encoder       C, D            
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -405,11 +387,19 @@ void skillsAuton() {
   
 
   //roll first roller
+  /*
   driveAll(reverse);
   IntakeMotor.spin(reverse);
-  wait(1, sec);
+  wait(1.1, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
+  */
+  driveAll(reverse);
+  wait(0.75, sec);
+  stopAll(brake);
+  IntakeMotor.spin(reverse);
+  wait(0.3, sec);
+  IntakeMotor.stop(brake);
 
   //pick up corner disc and roll second roller
   driveAllFor(forward, 1250);
@@ -423,7 +413,7 @@ void skillsAuton() {
   //shoot all 3 discs
   driveAllFor(forward, 650);
   liftFarTask.resume();
-  turnLeftInertial(83);
+  turnLeftInertial(82);
   IntakeMotor.spinFor(forward, 100, degrees);
   driveAll(forward);
   wait(1.7, sec);
@@ -435,103 +425,26 @@ void skillsAuton() {
   shootDiscs(12);
   wait(2.4, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
- 
   IntakeMotor.spinFor(reverse, 650, degrees);
-  
   IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 
-  //shoot 2 discs
-  /**
-  shootDiscs(12);
-  wait(3, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees); 
-  wait(1, sec);
-  IntakeMotor.spinFor(reverse, 500, degrees);
-  stopDiscs();
-  
-  //raise lift
-  liftIntakeTask.resume();
-
-  //roll roller
-  turnLeftInertial(83); 
-  IntakeMotor.spin(forward);
-  driveAll(reverse);
-  wait(1.1, sec);
-  IntakeMotor.stop(brake);
-  
-  //pick up corner disc and roll roller
-  driveAllFor(forward, 1180);
-  turnRightInertial(85);
-  IntakeMotor.spin(forward);
-  driveAllFor(reverse, 1650);
-  wait(0.3, sec);
-  IntakeMotor.stop(brake);
-  driveAllFor(forward, 650); 
-  
-  
-  //lower lift
-  liftFarTask.resume();
-
-  //shoot 1 disc
-  turnLeftInertial(83); 
-  driveAllFor(forward, 910);
-
-  IntakeMotor.spinFor(reverse, 550, degrees);
-  
   liftFarTask.suspend();
-
-  shootDiscs(8.1); 
-  wait(4.5, sec);
-  IntakeMotor.spinFor(forward, 2000, degrees); //1500
-  stopDiscs();
-
   liftIntakeTask.resume();
-  
 
-  //spit out disc and align for row
-  IntakeMotor.spin(forward);  
-  turnLeftInertial(135); 
+  //pick up 3 discs in a row
+  driveAllFor(reverse, 1350);
+  turnLeftInertial(125);
 
-  //pick up discs and align for shooting discs
-  driveAll(reverse);
-  wait(2, sec);
-
-  IntakeMotor.spin(forward);
-  wait(1.5, sec);
+  IntakeMotor.spin(reverse);
+  driveAllFor(reverse, 4500);
   IntakeMotor.stop(brake);
-  wait(0.75, sec);
-  IntakeMotor.spin(forward);
-  wait(1.25, sec);
-  IntakeMotor.stop(brake);
-  wait(0.65, sec);
-  IntakeMotor.spin(forward);
-  wait(1.5, sec);
-  IntakeMotor.stop();
-  wait(1.2, sec);
-  stopAll(brake);
-  turnRightInertial(77);
-  IntakeMotor.spinFor(reverse, 450, degrees);
 
-  
-  //shoot endgame
-  ShootClose.spin(forward, -12, volt);
-  ShootFar.spin(forward, -12, volt);
-  wait(4, sec);
-  
-
-  //shoot 3 discs
-  shootDiscs(6.75); 
-  wait(3, sec);
-  IntakeMotor.spinFor(forward, 750, degrees);
-  shootDiscs(6.55);
-  wait(3, sec);
-  IntakeMotor.spinFor(forward, 1000, degrees);
-  wait(3, sec);
-  IntakeMotor.spinFor(forward, 2500, degrees);
-  stopDiscs();
-
-  **/
+  turnRightInertial(64);
+  IntakeMotor.spinFor(forward, 200, degrees);
+  shootDiscs(12);
+  wait(1, sec);
+  IntakeMotor.spinFor(reverse, 2100, degrees);
 }
 
 void sec15Roller() {
@@ -640,7 +553,7 @@ int main() {
   wait(1, sec);
   
   //"pre auton function" (need to also calibrate inertial sensor in function)
-  Lift.setVelocity(100, percent); //60 --> 69 --> 80 --> 100
+  Lift.setVelocity(100, percent);
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
@@ -652,5 +565,4 @@ int main() {
 
   //needs work
   skillsAuton();
-  
 }
