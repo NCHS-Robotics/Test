@@ -413,8 +413,8 @@ void skillsAuton() {
   //shoot all 3 discs
   driveAllFor(forward, 650);
   liftFarTask.resume();
-  turnLeftInertial(82);
-  IntakeMotor.spinFor(forward, 100, degrees);
+  turnLeftInertial(83);
+  IntakeMotor.spinFor(forward, 50, degrees);
   driveAll(forward);
   wait(1.7, sec);
   Lift.spin(forward);
@@ -423,9 +423,10 @@ void skillsAuton() {
   stopAll(brake);
 
   shootDiscs(12);
-  wait(2.4, sec);
+  wait(2.6, sec);
   IntakeMotor.spinFor(reverse, 500, degrees);
   IntakeMotor.spinFor(reverse, 650, degrees);
+  wait(.1, sec);
   IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 
@@ -441,12 +442,14 @@ void skillsAuton() {
   IntakeMotor.stop(brake);
 
   turnRightInertial(64);
-  IntakeMotor.spinFor(forward, 200, degrees);
+  IntakeMotor.spinFor(forward, 150, degrees);
+  Lift.spin(reverse);
+  wait(0.7,sec);
+  Lift.stop(brake);
   shootDiscs(12);
-  wait(1, sec);
+  wait(2, sec);
   IntakeMotor.spinFor(reverse, 2100, degrees);
 }
-
 void sec15Roller() {
   //setDrivePercentage(35);
 
