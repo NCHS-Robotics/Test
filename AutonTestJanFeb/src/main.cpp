@@ -385,15 +385,7 @@ void skillsAuton() {
   task liftIntakeTask = task(resetLiftIntake);
   liftIntakeTask.suspend();
   
-
   //roll first roller
-  /*
-  driveAll(reverse);
-  IntakeMotor.spin(reverse);
-  wait(1.1, sec);
-  IntakeMotor.stop(brake);
-  stopAll(brake);
-  */
   driveAll(reverse);
   wait(0.75, sec);
   stopAll(brake);
@@ -409,12 +401,17 @@ void skillsAuton() {
   wait(2, sec);
   IntakeMotor.stop(brake);
   stopAll(brake);
+  driveAll(reverse);
+  IntakeMotor.spin(reverse);
+  wait(0.3, sec);
+  stopAll(brake);
+  IntakeMotor.stop(brake);
 
   //shoot all 3 discs
   driveAllFor(forward, 650);
   liftFarTask.resume();
-  turnLeftInertial(83);
-  IntakeMotor.spinFor(forward, 50, degrees);
+  turnLeftInertial(84);
+  IntakeMotor.spinFor(forward, 75, degrees);
   driveAll(forward);
   wait(1.7, sec);
   Lift.spin(forward);
@@ -433,32 +430,101 @@ void skillsAuton() {
   liftFarTask.suspend();
   liftIntakeTask.resume();
 
-  //pick up 3 discs in a row
+  //pick up 3 discs in a row and shoot them
   driveAllFor(reverse, 1350);
-  turnLeftInertial(125);
+  turnLeftInertial(127);
 
   IntakeMotor.spin(reverse);
   driveAllFor(reverse, 4500);
   IntakeMotor.stop(brake);
 
-  turnRightInertial(64);
-  IntakeMotor.spinFor(forward, 150, degrees);
-  Lift.spin(reverse);
-  wait(0.7,sec);
-  Lift.stop(brake);
+  liftIntakeTask.suspend();
+
+  turnRightInertial(66);
+  IntakeMotor.spinFor(forward, 100, degrees);
   shootDiscs(12);
-  wait(2, sec);
+  Lift.spin(reverse);
+  wait(0.7, sec);
+  Lift.stop(brake);
+  wait(1, sec);
   IntakeMotor.spinFor(reverse, 2100, degrees);
+  stopDiscs();
+
+  //get 3 stack of discs
+  liftIntakeTask.resume();
+  //added while loop bc task doesn't work???
+  while(!(LimitSwitchIntake.pressing())) {
+    Lift.spin(forward);
+  }
+  Lift.stop(brake);
+
+  turnLeftInertial(65);
+  wait(0.5, sec);
+  IntakeMotor.spin(reverse);
+  driveAllFor(reverse, 3000);
+  IntakeMotor.stop(brake);
+
+  //shoot 3 discs
+  liftIntakeTask.suspend();
+  liftFarTask.resume();
+  turnRightInertial(30); //29 or 30
+  IntakeMotor.spinFor(forward, 75, degrees);
+  driveAll(forward);
+  wait(1.7, sec);
+  Lift.spin(forward);
+  wait(0.1, sec);
+  Lift.stop(hold);
+  stopAll(brake);
+
+  shootDiscs(12);
+  wait(2.6, sec);
+  IntakeMotor.spinFor(reverse, 500, degrees);
+  IntakeMotor.spinFor(reverse, 650, degrees);
+  wait(.1, sec);
+  IntakeMotor.spinFor(reverse, 950, degrees);
+  stopDiscs();
+  
+  //go back to roller and spin roller
+  liftFarTask.suspend();
+  liftIntakeTask.resume();
+
+  driveAll(forward);
+  wait(2.55, sec); //1.85 + 0.2 + 0.5
+  stopAll(brake);
+  
+  turnLeftInertial(80);
+
+  driveAll(reverse);
+  wait(1, sec);
+  stopAll(brake);
+  IntakeMotor.spin(reverse);
+  wait(0.3, sec);
+  IntakeMotor.stop(brake);
+  
+  //pick up corner disc and spin other roller
+  driveAllFor(forward, 1050);
+  turnRightInertial(80);
+  
+  IntakeMotor.spin(reverse);
+  driveAll(reverse);
+  wait(1.5, sec);
+  IntakeMotor.stop(brake);
+  stopAll(brake);
+  driveAll(reverse);
+  IntakeMotor.spin(reverse);
+  wait(0.5, sec);
+  IntakeMotor.stop(brake);
+  stopAll(brake);
 }
+
 void sec15Roller() {
   //setDrivePercentage(35);
-
   task liftFarTask = task(resetLiftFar);
   liftFarTask.suspend();
   task liftIntakeTask = task(resetLiftIntake);
   liftIntakeTask.suspend();
     
-  ControllerScreen.print("shooting");
+  //ControllerScreen.print("shooting");
   shootDiscs(12);
   driveAll(forward);
   wait(.35, sec);
@@ -473,8 +539,8 @@ void sec15Roller() {
   IntakeMotor.spinFor(reverse, 950, degrees);
   stopDiscs();
 
-  ControllerScreen.setCursor(1,0);
-  ControllerScreen.print("roller-movingback");
+  //ControllerScreen.setCursor(1,0);
+  //ControllerScreen.print("roller-movingback");
   liftIntakeTask.resume();
   
   turnRightInertial(9);
@@ -484,9 +550,9 @@ void sec15Roller() {
   IntakeMotor.stop(brake);
   stopAll(brake);
 
-  ControllerScreen.clearScreen();
-  ControllerScreen.setCursor(1,0);
-  ControllerScreen.print("roller-done");
+  //ControllerScreen.clearScreen();
+  //ControllerScreen.setCursor(1,0);
+  //ControllerScreen.print("roller-done");
   driveAllFor(forward, 525);
   //pidLeft(79.5);
   turnLeftInertial(130);
@@ -549,10 +615,10 @@ int main() {
 
   //calibrate inertial
   while(Inertial.isCalibrating()) {
-    ControllerScreen.print("calibrating");
+    //ControllerScreen.print("calibrating");
   }
-  ControllerScreen.clearScreen();
-  ControllerScreen.setCursor(0,0);
+  //ControllerScreen.clearScreen();
+  //ControllerScreen.setCursor(0,0);
   wait(1, sec);
   
   //"pre auton function" (need to also calibrate inertial sensor in function)
@@ -567,5 +633,5 @@ int main() {
   //sec15Far(); //shooter off?? test again tmrw (3/6)
 
   //needs work
-  skillsAuton();
+  skillsAuton();  
 }
