@@ -40,7 +40,7 @@ double v = 0.0;
 
 //initialize motors
 void init() {
-  Lift.setVelocity(100, percent); //60 --> 69 --> 80 --> 100
+  Lift.setVelocity(100, percent);
   IntakeMotor.setVelocity(100, percent);
   ShootClose.setVelocity(100, percent);
   ShootFar.setVelocity(100, percent);
@@ -281,11 +281,6 @@ int shootDiscs2() {
     return 0;
 }
 
-void turnR(int target) {
-  bool i = Inertial.heading(degrees);
-
-
-}
 //PI Controller to move forward and back
 void pi(int endValue) {  
   bool enableDrivePID = true;
@@ -379,6 +374,8 @@ int resetLiftIntake() {
 }
 
 void skillsAuton() {
+  setDrivePercentage(35);
+  
   //initialize lift task
   task liftFarTask = task(resetLiftFar);
   liftFarTask.suspend();
@@ -407,10 +404,11 @@ void skillsAuton() {
   IntakeMotor.stop(brake);
   driveAll(reverse);
   IntakeMotor.spin(reverse);
-  wait(0.5, sec); //configure at comp
+  wait(0.3, sec); //configure at comp
   stopAll(brake);
   IntakeMotor.stop(brake);
 
+  /*
   //shoot all 3 discs
   driveAllFor(forward, 650);
   liftFarTask.resume();
@@ -610,6 +608,7 @@ void sec15Roller() {
   driveAllFor(reverse, 3000);
   wait(.25, sec);
   IntakeMotor.stop(brake);
+  */
 }
 
 void sec15Far() {
@@ -678,6 +677,6 @@ int main() {
   setDrivePercentage(35);
 
   //sec15Roller();
-  sec15Far();
-  //skillsAuton(); 
+  //sec15Far();
+  skillsAuton(); 
 }
